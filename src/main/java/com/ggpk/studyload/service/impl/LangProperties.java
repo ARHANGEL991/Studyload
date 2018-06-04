@@ -67,6 +67,7 @@ public enum LangProperties {
     HELP("scene.home.menu.help"),
     CONTACT("scene.home.menu.help"),
     LIST_OF_DISCIPLINES("scene.home.menu.master.plan"),
+    LIST_OF_DISCIPLINES_LOADING("scene.home.menu.master.plan.load"),
     DATA_AN_ACCOUNT("scene.home.menu.setting.account.an-account"),
     IS_ACTIVE("java.model.account.is.active"),
     ID("java.model.id"),
@@ -95,7 +96,6 @@ public enum LangProperties {
     QTY_OF_ITEM_LESS_THAN_PARAMS("javafx.notification.warning.item.min"),
     PROCESS("javafx.action.processed"),
     NOT_READY("javafx.action.not.ready"),
-    READY_FOR_SALE("javafx.action.ready.for.sale"),
     DATA_DISCIPLINE("java.model.discipline.name"),
     DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete");
 

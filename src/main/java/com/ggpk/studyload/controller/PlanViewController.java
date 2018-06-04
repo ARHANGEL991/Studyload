@@ -329,11 +329,11 @@ public class PlanViewController implements FxInitializable, TableDataController 
         try {
             tableView.getItems().clear();
 
-            dialogWindow.loading(tableView.getItems(), disciplineService::getAll, LangProperties.LIST_OF_DISCIPLINES.getValue());
+            dialogWindow.loading(tableView.getItems(), disciplineService::getAll, LangProperties.LIST_OF_DISCIPLINES_LOADING.getValue());
             tableView.requestFocus();
             disciplines = tableView.getItems();
         } catch (Exception e) {
-            dialogWindow.errorLoading(LangProperties.LIST_OF_DISCIPLINES.getValue(), e);
+            dialogWindow.errorLoading(LangProperties.LIST_OF_DISCIPLINES_LOADING.getValue(), e);
             log.error("Load data error", e);
         }
     }
