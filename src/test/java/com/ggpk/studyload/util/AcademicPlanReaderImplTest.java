@@ -8,7 +8,7 @@ public class AcademicPlanReaderImplTest {
     AcademicPlanReaderImpl academicPlanReader = new AcademicPlanReaderImpl();
 
     @Test
-    public void cellMappingInitialize() {
+    public void cellMappingInitialize() throws Exception {
         academicPlanReader.getAcademicYearFromXls(AcademicPlanReaderImpl.INPUT_XLSX, 2);
     }
 
