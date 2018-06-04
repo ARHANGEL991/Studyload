@@ -22,10 +22,8 @@ import java.io.File;
 import java.net.URL;
 import java.time.Month;
 import java.time.Year;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.prefs.Preferences;
 
 @FXMLController
 public class TeacherMonthReportViewController implements FxInitializable {
@@ -71,9 +69,6 @@ public class TeacherMonthReportViewController implements FxInitializable {
     private final DisciplineService disciplineService;
 
 
-    /**
-     * todo
-     */
     public void doClose(ActionEvent event) {
 
     }
