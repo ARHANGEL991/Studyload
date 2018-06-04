@@ -9,7 +9,7 @@ import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.TableViewColumnAction;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.DialogWindow;
-import com.ggpk.studyload.util.TableCellInitiializeUtil;
+import com.ggpk.studyload.util.TableCellInitializeUtil;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
@@ -169,21 +169,21 @@ public class PlanViewController implements FxInitializable, TableDataController 
 
     private void initColumns() {
 
-        TableCellInitiializeUtil.columnGroupNameInitialize(columnGroupName);
+        TableCellInitializeUtil.columnGroupNameInitialize(columnGroupName);
 
         columnDisciplineName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableCellInitiializeUtil.columnSumHoursInitialize(columnSumHours);
+        TableCellInitializeUtil.columnSumHoursInitialize(columnSumHours);
 
-        TableCellInitiializeUtil.columnAdditionalControlInitialize(columnAdditionalControl);
+        TableCellInitializeUtil.columnAdditionalControlInitialize(columnAdditionalControl);
 
-        TableCellInitiializeUtil.columnGroupStudentCountInitialize(columnGroupStudentCount);
+        TableCellInitializeUtil.columnGroupStudentCountInitialize(columnGroupStudentCount);
 
-        TableCellInitiializeUtil.columnDisciplineTypeInitialize(columnDisciplineType);
+        TableCellInitializeUtil.columnDisciplineTypeInitialize(columnDisciplineType);
 
-        TableCellInitiializeUtil.columnGroupTypeInitialize(columnGroupType);
+        TableCellInitializeUtil.columnGroupTypeInitialize(columnGroupType);
 
-        TableCellInitiializeUtil.columnTeacherNameInitialize(columnTeacherName);
+        TableCellInitializeUtil.columnTeacherNameInitialize(columnTeacherName);
 
         columnAction.setCellFactory(param -> new com.ggpk.studyload.controller.ColumnActionDiscipline(tableView,
                 tableViewColumnAction,

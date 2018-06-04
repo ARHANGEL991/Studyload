@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 
-public final class TableCellInitiializeUtil {
+public final class TableCellInitializeUtil {
 
 
     public static void columnGroupNameInitialize(TableColumn<Discipline, String> columnGroupName) {
