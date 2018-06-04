@@ -12,7 +12,10 @@ import com.ggpk.studyload.service.ui.notifications.DialogWindow;
 import com.ggpk.studyload.util.TableCellInitializeUtil;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @FXMLController
 @Slf4j
@@ -119,6 +125,9 @@ public class PlanViewController implements FxInitializable, TableDataController 
     @FXML
     private TextField txtSecondTermLaboratoryPracticalE;
 
+    @FXML
+    private TextField txtSearch;
+
 
     private List<TextField> firstTermTextFields;
     private List<TextField> secondTermTextFields;
@@ -136,6 +145,8 @@ public class PlanViewController implements FxInitializable, TableDataController 
 
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private ObservableList<Discipline> disciplines;
 
 
     @Autowired
@@ -163,6 +174,7 @@ public class PlanViewController implements FxInitializable, TableDataController 
 
         initColumns();
         initTxtFields();
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> doSearch(null));
 
 
     }
@@ -207,6 +219,22 @@ public class PlanViewController implements FxInitializable, TableDataController 
 
     public void searchData() {
         //TODO
+    }
+
+    @FXML
+    void doSearch(ActionEvent event) {
+        tableView.setItems(disciplines);
+
+        if (!txtSearch.getText().isEmpty()) {
+
+            tableView.setItems(tableView.getItems().stream()
+                    .filter(discip ->
+                            discip.getGroup().getName().contains(txtSearch.getText())
+                                    || discip.getFullGroup().getTeacher().getName().contains(txtSearch.getText())
+                                    || discip.getName().contains(txtSearch.getText()))
+                    .collect(Collectors.collectingAndThen(toList(), FXCollections::observableArrayList))
+            );
+        }
     }
 
     private void initTxtFields() {
@@ -303,6 +331,7 @@ public class PlanViewController implements FxInitializable, TableDataController 
 
             dialogWindow.loading(tableView.getItems(), disciplineService::getAll, LangProperties.LIST_OF_DISCIPLINES.getValue());
             tableView.requestFocus();
+            disciplines = tableView.getItems();
         } catch (Exception e) {
             dialogWindow.errorLoading(LangProperties.LIST_OF_DISCIPLINES.getValue(), e);
             log.error("Load data error", e);
