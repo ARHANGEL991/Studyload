@@ -10,7 +10,7 @@ import com.ggpk.studyload.service.ui.notifications.DialogWindow;
 import com.ggpk.studyload.ui.event.ShowViewEvent;
 import com.ggpk.studyload.ui.masterdata.ProofReaderAddView;
 import com.ggpk.studyload.util.EditCell;
-import com.ggpk.studyload.util.TableCellInitiializeUtil;
+import com.ggpk.studyload.util.TableCellInitializeUtil;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -354,19 +354,19 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     }
 
     private void setColumnsValueFactory() {
-        TableCellInitiializeUtil.columnGroupNameInitialize(columnGroupName);
+        TableCellInitializeUtil.columnGroupNameInitialize(columnGroupName);
 
         columnDisciplineName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
 
-        TableCellInitiializeUtil.columnAdditionalControlInitialize(columnAdditionalControl);
+        TableCellInitializeUtil.columnAdditionalControlInitialize(columnAdditionalControl);
 
-        TableCellInitiializeUtil.columnGroupStudentCountInitialize(columnGroupStudentCount);
+        TableCellInitializeUtil.columnGroupStudentCountInitialize(columnGroupStudentCount);
 
 
-        TableCellInitiializeUtil.columnGroupTypeInitialize(columnGroupType);
+        TableCellInitializeUtil.columnGroupTypeInitialize(columnGroupType);
 
-        TableCellInitiializeUtil.columnTeacherNameInitialize(columnTeacherName);
+        TableCellInitializeUtil.columnTeacherNameInitialize(columnTeacherName);
 
 
         columnAction.setCellFactory(param -> new ColumnActionDiscipline(tableView, tableViewColumnAction, dialogBalloon, dialogWindow, disciplineService, this::searchData));
