@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+            xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ggpk.studyload.controller.ProofReaderViewController">
+
+    <center>
+        <AnchorPane prefHeight="422.0" prefWidth="713.0">
+            <children>
+                <TableView fx:id="tableView" editable="true" layoutX="20.0" layoutY="20.0" prefHeight="370.0"
+                           prefWidth="693.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                        <TableColumn fx:id="columnGroupType" maxWidth="20.0" minWidth="20.0" prefWidth="28.0"
+                                     text="%java.model.group.type"/>
+                        <TableColumn fx:id="columnGroupName" editable="false" maxWidth="80.0" minWidth="50.0"
+                                     prefWidth="125.0" text="%java.model.group.name"/>
+                        <TableColumn fx:id="columnAdditionalControl" maxWidth="30.0" minWidth="20.0" prefWidth="38.0"
+                                     text="%java.model.discipline.additionalControl"/>
+                        <TableColumn fx:id="columnTeacherName" maxWidth="200.0" minWidth="80.0" prefWidth="121.0"
+                                     text="%java.model.teacher.name"/>
+                        <TableColumn fx:id="columnDisciplineName" maxWidth="330.0" minWidth="80.0" prefWidth="195.0"
+                                     text="%java.model.discipline.name"/>
+                        <TableColumn fx:id="columnGroupStudentCount" minWidth="25.0" prefWidth="583.0"
+                                     text="%scene.home.menu.master.prof-reading.days">
+                            <columns>
+                                <TableColumn fx:id="column1" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="1"/>
+                                <TableColumn fx:id="column2" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="2"/>
+                                <TableColumn fx:id="column3" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="3"/>
+                                <TableColumn fx:id="column4" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="4"/>
+                                <TableColumn fx:id="column5" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="5"/>
+                                <TableColumn fx:id="column6" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="6"/>
+                                <TableColumn fx:id="column7" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="7"/>
+                                <TableColumn fx:id="column8" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="8"/>
+                                <TableColumn fx:id="column9" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0" text="9"/>
+                                <TableColumn fx:id="column10" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="10"/>
+                                <TableColumn fx:id="column11" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="11"/>
+                                <TableColumn fx:id="column12" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="12"/>
+                                <TableColumn fx:id="column13" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="13"/>
+                                <TableColumn fx:id="column14" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="14"/>
+                                <TableColumn fx:id="column15" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="15"/>
+                                <TableColumn fx:id="column16" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="16"/>
+                                <TableColumn fx:id="column17" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="17"/>
+                                <TableColumn fx:id="column18" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="18"/>
+                                <TableColumn fx:id="column19" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="19"/>
+                                <TableColumn fx:id="column20" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="20"/>
+                                <TableColumn fx:id="column21" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="21"/>
+                                <TableColumn fx:id="column22" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="22"/>
+                                <TableColumn fx:id="column23" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="23"/>
+                                <TableColumn fx:id="column24" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="24"/>
+                                <TableColumn fx:id="column25" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="25"/>
+                                <TableColumn fx:id="column26" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="26"/>
+                                <TableColumn fx:id="column27" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="27"/>
+                                <TableColumn fx:id="column28" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="28"/>
+                                <TableColumn fx:id="column29" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="29"/>
+                                <TableColumn fx:id="column30" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="30"/>
+                                <TableColumn fx:id="column31" maxWidth="30.0" minWidth="30.0" prefWidth="-1.0"
+                                             text="31"/>
+                            </columns>
+                        </TableColumn>
+                        <TableColumn fx:id="columnMonthSum" editable="false" maxWidth="75.0" minWidth="40.0"
+                                     prefWidth="75.0" text="%scene.home.menu.master.proof-reading.sum"/>
+                        <TableColumn fx:id="columnAction" maxWidth="200.0" minWidth="100.0" prefWidth="95.0"
+                                     sortable="false" text="%javafx.action.do">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="TASKS" size="14"/>
+                            </graphic>
+                        </TableColumn>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                    <contextMenu>
+                        <ContextMenu>
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#loadData" text="%javafx.action.refresh">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="F5" control="DOWN" meta="UP" shift="UP"
+                                                            shortcut="UP"/>
+                                    </accelerator>
+                                    <graphic>
+                                        <FontAwesomeIconView glyphName="REFRESH" size="18"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem mnemonicParsing="false" onAction="#tableViewClearSelection"
+                                          text="%javafx.action.clear.selection">
+                                    <graphic>
+                                        <FontAwesomeIconView glyphName="SQUARE_ALT" size="18"/>
+                                    </graphic>
+                                </MenuItem>
+                            </items>
+                        </ContextMenu>
+                    </contextMenu>
+                </TableView>
+            </children>
+            <padding>
+                <Insets left="10.0" right="10.0" top="10.0"/>
+            </padding>
+        </AnchorPane>
+    </center>
+    <bottom>
+        <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-radius: 5;">
+            <items>
+                <Button defaultButton="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                        mnemonicParsing="false" onAction="#newItem" prefHeight="35.0" prefWidth="120.0"
+                        text="%javafx.action.new">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="PLUS" size="18"/>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="%scene.item.tooltips.new"/>
+                    </tooltip>
+                </Button>
+                <Button layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
+                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadData" prefHeight="35.0"
+                        prefWidth="36.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="REFRESH" size="18"/>
+                    </graphic>
+                </Button>
+                <Separator orientation="VERTICAL" prefHeight="35.0" prefWidth="17.0"/>
+                <Button defaultButton="true" layoutX="134.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
+                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveData" prefHeight="35.0"
+                        prefWidth="36.0">
+                    <graphic>
+                        <FontAwesomeIconView fill="#618601" fontSmoothingType="LCD" glyphName="SAVE" size="20"
+                                             strikethrough="true"/>
+                    </graphic>
+                </Button>
+                <Separator orientation="VERTICAL" prefHeight="35.0" prefWidth="25.0"/>
+                <Label text="%scene.home.search"/>
+                <TextField fx:id="txtSearch"/>
+                <Label text="%scene.month"/>
+
+
+                <ChoiceBox fx:id="choiseBoxMonth" prefHeight="25.0">
+                    <!--<items>-->
+                    <!--<FXCollections fx:factory="observableArrayList">-->
+                    <!--<String fx:value="%scene.month.january"/>-->
+                    <!--<String fx:value="%scene.month.february"/>-->
+                    <!--<String fx:value="%scene.month.march"/>-->
+                    <!--<String fx:value="%scene.month.april"/>-->
+                    <!--<String fx:value="%scene.month.may"/>-->
+                    <!--<String fx:value="%scene.month.june"/>-->
+                    <!--<String fx:value="%scene.month.july"/>-->
+                    <!--<String fx:value="%scene.month.august"/>-->
+                    <!--<String fx:value="%scene.month.september"/>-->
+                    <!--<String fx:value="%scene.month.october"/>-->
+                    <!--<String fx:value="%scene.month.november"/>-->
+                    <!--<String fx:value="%scene.month.december"/>-->
+                    <!--</FXCollections>-->
+
+                    <!--</items>-->
+                </ChoiceBox>
+                <RadioButton fx:id="radioBtnWithoutDK" mnemonicParsing="false" selected="true"
+                             text="%scene.home.menu.master.proof-reading.without-DK">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="termGroup"/>
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton mnemonicParsing="false" text="%scene.home.menu.master.proof-reading.DK"
+                             toggleGroup="$termGroup"/>
+                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                        onAction="#searchData" prefHeight="35.0" prefWidth="36.0">
+                    <graphic>
+                        <FontAwesomeIconView fontSmoothingType="LCD" glyphName="SEARCH" size="18" strikethrough="true"/>
+                    </graphic>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </Button>
+            </items>
+        </ToolBar>
+    </bottom>
+    <top>
+        <HBox prefHeight="49.0" prefWidth="1137.0" spacing="10.0">
+            <children>
+                <FontAwesomeIconView glyphName="LIST_ALT" size="28"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%scene.home.menu.master.proof-reading">
+                    <font>
+                        <Font name="System Bold" size="20.0"/>
+                    </font>
+                </Text>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+        </HBox>
+    </top>
+    <opaqueInsets>
+        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+    </opaqueInsets>
+</BorderPane>
