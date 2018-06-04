@@ -37,7 +37,6 @@ example.xls
 example.xlsx
 result.xls
 src/main/java/com/ggpk/studyload/model/dto/
-src/main/java/com/ggpk/studyload/util/TableCellInitiializeUtil.java
 src/main/resources/icons/logo/
 src/main/resources/input/
 src/main/resources/reports/
@@ -48,3 +47,4 @@ studyload.log.2018-05-21.0.gz
 studyloadv2.iml
 target/
 /src/main/resources/input/
+
