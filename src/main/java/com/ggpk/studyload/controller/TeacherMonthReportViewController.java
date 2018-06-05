@@ -15,17 +15,27 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.time.Month;
 import java.time.Year;
 import java.util.*;
-import java.util.prefs.Preferences;
 
 @FXMLController
+@Slf4j
 public class TeacherMonthReportViewController implements FxInitializable {
     @FXML
     private Text txtPath;
@@ -75,7 +85,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
     public void initialize(URL location, ResourceBundle resources) {
 
-        txtPath.setText(userPreferencesService.getTeacherReportPath());
+        txtPath.setText(userPreferencesService.getTeacherReportFolderPath());
         comboBoxMonth.getItems().addAll(
                 messageSource.getMessage("scene.month.january", null, Locale.getDefault()),
                 messageSource.getMessage("scene.month.february", null, Locale.getDefault()),
@@ -108,27 +118,50 @@ public class TeacherMonthReportViewController implements FxInitializable {
     @FXML
     void doReport(ActionEvent event) {
 
-        Map<String, String> exportGroupSettings = new HashMap<>();
-        exportGroupSettings.put("xlsArea", "ВедомостьМесяцПреподаватель!A1:AI10");
-        exportGroupSettings.put("disciplineArea", "ВедомостьМесяцПреподаватель!A9:AI9");
-        exportGroupSettings.put("disciplineAreaEachArea", "A9:AI9");
+        Map<String, String> exportTeacherReportSettings = new HashMap<>();
+        exportTeacherReportSettings.put("xlsArea", "ВедомостьМесяцПреподаватель!A1:AI10");
+        exportTeacherReportSettings.put("disciplineArea", "ВедомостьМесяцПреподаватель!A9:AI9");
+        exportTeacherReportSettings.put("disciplineAreaEachArea", "A9:AI9");
 
         String fileName = "TeachersReports.xls";
 
-        doMonthReport(exportGroupSettings, fileName);
+
+        doMonthReport(exportTeacherReportSettings, fileName);
+
     }
 
-    private void doMonthReport(Map<String, String> exportGroupSettings, String fileName) {
-        File outputFile = new File(userPreferencesService.getTeacherReportPath(), fileName);
+    private void doMonthReport(Map<String, String> exportTeacherReportSettings, String fileName) {
+        File outputFile = new File(userPreferencesService.getTeacherReportFolderPath(), fileName);
+
+        File copiedFile = null;
+
+        String outputFilePath = outputFile.getAbsolutePath();
+        String inputFilePath = userPreferencesService.getTeacherReportTemplateFilePath();
+
+        //If template is in output file it need to copy because one file for 2 streams it's too hard
+        if (inputFilePath.equals(outputFilePath) || outputFile.exists() && isWorksheetContainsReports(outputFilePath)) {
+            copiedFile = new File(userPreferencesService.getTeacherReportFolderPath(), "Template.xls");
+            try {
+                Files.copy(outputFile.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                log.error("Error to copy", e);
+            }
+            inputFilePath = copiedFile.getAbsolutePath();
+        }
 
         monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
                 comboBoxTeacher.getSelectionModel().getSelectedItem().getName(),
                 disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getSelectionModel().getSelectedItem().getName()),
-                exportGroupSettings,
-                userPreferencesService.getTeacherReportTemplateFilePath(),
-                outputFile.getAbsolutePath());
+                exportTeacherReportSettings,
+                inputFilePath,
+                outputFilePath);
 
-        monthReporterService.clearAllZeroCell(outputFile.getAbsolutePath(), comboBoxTeacher.getSelectionModel().getSelectedItem().getName(), 8, 3);
+        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem().getName(), 8, 3);
+
+        if (copiedFile != null && !copiedFile.delete()) {
+            log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
+
+        }
     }
 
     @FXML
@@ -148,6 +181,16 @@ public class TeacherMonthReportViewController implements FxInitializable {
         if (selectedDirectory != null) {
             txtPath.setText(selectedDirectory.getAbsolutePath());
             userPreferencesService.setTeacherReportTemplateFilePath(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    @SneakyThrows
+    private boolean isWorksheetContainsReports(String worksheetPath) {
+        try (InputStream workbookStream = new FileInputStream(new File(worksheetPath))) {
+
+            try (Workbook hssfInputWorkbook = WorkbookFactory.create(workbookStream)) {
+                return hssfInputWorkbook.getNumberOfSheets() > 1;
+            }
         }
     }
 }

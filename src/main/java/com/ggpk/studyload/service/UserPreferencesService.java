@@ -2,9 +2,9 @@ package com.ggpk.studyload.service;
 
 public interface UserPreferencesService {
 
-    String getTeacherReportPath();
+    String getTeacherReportFolderPath();
 
-    String getGroupReportPath();
+    String getGroupReportFolderPath();
 
     void setTeacherReportPath(String path);
 
