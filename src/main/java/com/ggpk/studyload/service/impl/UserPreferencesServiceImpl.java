@@ -19,11 +19,11 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
 
     }
 
-    public String getTeacherReportPath() {
+    public String getTeacherReportFolderPath() {
         return userPref.get("teacherReportPath", System.getProperty("user.dir"));
     }
 
-    public String getGroupReportPath() {
+    public String getGroupReportFolderPath() {
         return userPref.get("groupReportPath", System.getProperty("user.dir"));
     }
 
