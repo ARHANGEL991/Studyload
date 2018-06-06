@@ -117,6 +117,7 @@ public class GroupMonthReportViewController implements FxInitializable {
             }
         });
 
+        comboBoxMonth.getSelectionModel().selectFirst();
     }
 
 

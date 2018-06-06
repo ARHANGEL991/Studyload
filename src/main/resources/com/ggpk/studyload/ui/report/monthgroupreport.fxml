@@ -21,7 +21,7 @@
         <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
             <children>
                 <FontAwesomeIconView glyphName="ERASER" size="28"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%scene.home.menu.report.month.teacher"
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%scene.home.menu.report.month.group"
                       underline="true">
                     <font>
                         <Font name="System Bold" size="20.0"/>

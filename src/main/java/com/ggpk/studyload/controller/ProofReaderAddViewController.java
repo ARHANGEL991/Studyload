@@ -5,6 +5,8 @@ import com.ggpk.studyload.model.enums.DisciplineType;
 import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.GroupService;
 import com.ggpk.studyload.service.TeacherService;
+import com.ggpk.studyload.service.impl.LangProperties;
+import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.ValidatorMessages;
 import com.ggpk.studyload.ui.event.ShowViewEvent;
 import com.ggpk.studyload.ui.masterdata.ProofReaderAddView;
@@ -21,6 +23,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 @FXMLController
@@ -82,9 +85,15 @@ public class ProofReaderAddViewController implements FxInitializable {
 
     private final MessageSource messageSource;
 
+    private final DialogBalloon dialogBalloon;
+
+
+
+
+
 
     @Autowired
-    public ProofReaderAddViewController(ProofReaderAddView proofReaderAddView, ApplicationEventPublisher applicationEventPublisher, ProofReaderView proofReaderView, TeacherService teacherService, GroupService groupService, DisciplineService disciplineService, ValidatorMessages validatorMessages, MessageSource messageSource) {
+    public ProofReaderAddViewController(ProofReaderAddView proofReaderAddView, ApplicationEventPublisher applicationEventPublisher, ProofReaderView proofReaderView, TeacherService teacherService, GroupService groupService, DisciplineService disciplineService, ValidatorMessages validatorMessages, MessageSource messageSource, DialogBalloon dialogBalloon) {
         this.proofReaderAddView = proofReaderAddView;
         this.applicationEventPublisher = applicationEventPublisher;
         this.proofReaderView = proofReaderView;
@@ -93,6 +102,7 @@ public class ProofReaderAddViewController implements FxInitializable {
         this.disciplineService = disciplineService;
         this.validatorMessages = validatorMessages;
         this.messageSource = messageSource;
+        this.dialogBalloon = dialogBalloon;
     }
 
 
@@ -131,6 +141,8 @@ public class ProofReaderAddViewController implements FxInitializable {
         discipline.setFullGroup(fullGroup);
 
         disciplineService.save(discipline);
+
+        dialogBalloon.succeedSave(messageSource.getMessage(LangProperties.SUCESSED_SAVE.getValue(), null, Locale.getDefault()));
 
     }
 

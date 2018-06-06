@@ -112,6 +112,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
             }
         });
 
+        comboBoxMonth.getSelectionModel().selectFirst();
     }
 
 

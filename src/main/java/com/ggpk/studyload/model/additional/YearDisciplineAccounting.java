@@ -4,6 +4,7 @@ import com.ggpk.studyload.model.BaseEntity;
 import com.ggpk.studyload.model.additional.interfaces.IYearDisciplineAccounting;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.ElementCollection;
@@ -16,7 +17,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 
-@Data
+@Getter
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
