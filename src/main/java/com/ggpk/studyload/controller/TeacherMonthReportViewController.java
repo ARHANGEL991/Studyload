@@ -19,6 +19,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
@@ -33,6 +34,9 @@ import java.text.MessageFormat;
 import java.time.Month;
 import java.time.Year;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.ggpk.studyload.controller.GroupMonthReportViewController.toSingleton;
 
 @FXMLController
 @Slf4j
@@ -101,18 +105,35 @@ public class TeacherMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxTeacher.getItems().addAll(teacherService.getAll());
         comboBoxTeacher.setConverter(new StringConverter<Teacher>() {
             public String toString(Teacher object) {
-                return object.getName();
+                String retVal = "";
+
+                if (object != null) {
+                    retVal = object.getName();
+                }
+
+                return retVal;
             }
 
-            public Teacher fromString(String string) {
-                return null;
+            public Teacher fromString(String teacherName) {
+                return comboBoxTeacher.getItems().stream()
+                        .filter(teacher -> teacher.getName().equalsIgnoreCase(teacherName))
+                        .limit(1)
+                        .collect(toSingleton());
             }
         });
+        comboBoxTeacher.getItems().addAll(teacherService.getAll().stream().sorted(Comparator.comparing(Teacher::getName)).collect(Collectors.toList()));
+
+//        comboBoxTeacher.setEditable(true);
+        comboBoxMonth.setEditable(true);
+//        TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
+        TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
+
+        comboBoxTeacher.getSelectionModel().selectFirst();
 
         comboBoxMonth.getSelectionModel().selectFirst();
+
     }
 
 
