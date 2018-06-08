@@ -10,6 +10,8 @@ public interface TableViewColumnAction {
 
     Hyperlink getDeleteLink();
 
+    Hyperlink getHideLink();
+
     Button getDetailLink();
 
     Node getSingleHyperlinkTableModel(String textOfLink);
@@ -20,5 +22,6 @@ public interface TableViewColumnAction {
 
     Node getSingleButtonTableModel(String textOfButton);
 
+    Node getDefaultHideTableModel();
 
 }

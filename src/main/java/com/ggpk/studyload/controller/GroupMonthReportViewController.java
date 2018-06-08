@@ -117,6 +117,7 @@ public class GroupMonthReportViewController implements FxInitializable {
             }
         });
 
+        comboBoxMonth.getSelectionModel().selectFirst();
     }
 
 
@@ -129,7 +130,7 @@ public class GroupMonthReportViewController implements FxInitializable {
         exportGroupSettings.put("disciplineAreaEachArea", "A9:AJ9");
 
 
-        String fileName = "GroupsReports.xls";
+        String fileName = "ОтчётыПоГруппе" + comboBoxMonth.getValue() + ".xls";
         File copiedFile = null;
 
         File outputFile = new File(userPreferencesService.getGroupReportFolderPath(), fileName);
