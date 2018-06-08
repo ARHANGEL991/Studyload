@@ -8,7 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -65,35 +65,41 @@ public class YearReporterServiceImpl implements YearReporterService {
                 HSSFSheet sheet = hssfInputWorkbook.cloneSheet(1);
                 hssfInputWorkbook.setSheetName(hssfInputWorkbook.getSheetIndex(sheet), exportEntityName);
 
-                AtomicInteger currentRow = new AtomicInteger(2);
+                AtomicInteger currentRow = new AtomicInteger(7);
                 AtomicInteger currentCell = new AtomicInteger(2);
 
-                sheet.getRow(6).createCell(6).setCellValue(exportEntityName);
+                sheet.getRow(5).createCell(5).setCellValue(exportEntityName);
 
 
                 groupDisciplines.forEach(discipline -> {
 
                     HSSFRow row = sheet.getRow(currentRow.getAndIncrement());
 
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getGroup().getName());
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getName());
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.SEPTEMBER));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.OCTOBER));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.NOVEMBER));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.DECEMBER));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JANUARY));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.FEBRUARY));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.MARCH));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.APRIL));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.MAY));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JUNE));
-                    row.createCell(currentCell.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JULY));
+                    //Discipline
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getGroup().getName());
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getName());
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.SEPTEMBER));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.OCTOBER));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.NOVEMBER));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.DECEMBER));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JANUARY));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.FEBRUARY));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.MARCH));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.APRIL));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.MAY));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JUNE));
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(Month.JULY));
 
-
-                    HSSFCell sumCell = row.createCell(currentCell.getAndIncrement());
+                    //Sum
+                    HSSFCell sumCell = row.createCell(currentRow.getAndIncrement());
                     sumCell.setCellType(CellType.FORMULA);
-                    String ref = (char) ('A' + currentCell.get()) + "3:" + (char) ('A' + currentCell.get()) + "12";
+                    String ref = (char) ('A' + currentRow.get()) + "9:" + (char) ('A' + currentRow.get()) + "19";
                     sumCell.setCellFormula("SUM(" + ref + ")");
+
+                    //Planed
+                    row.createCell(currentRow.getAndIncrement()).setCellValue(discipline.getFullGroup().getTotalSum());
+
+
                 });
 
 
