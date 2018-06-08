@@ -15,19 +15,33 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.time.Month;
 import java.time.Year;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @FXMLController
+@Slf4j
 public class GroupMonthReportViewController implements FxInitializable {
 
 
@@ -79,7 +93,7 @@ public class GroupMonthReportViewController implements FxInitializable {
 
     public void initialize(URL location, ResourceBundle resources) {
 
-        txtPath.setText(userPreferencesService.getTeacherReportPath());
+        txtPath.setText(userPreferencesService.getGroupReportFolderPath());
         comboBoxMonth.getItems().addAll(
                 messageSource.getMessage("scene.month.january", null, Locale.getDefault()),
                 messageSource.getMessage("scene.month.february", null, Locale.getDefault()),
@@ -95,22 +109,50 @@ public class GroupMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxGroup.getItems().addAll(groupService.getAll());
         comboBoxGroup.setConverter(new StringConverter<Group>() {
             public String toString(Group object) {
-                return object.getName();
+                String retVal = "";
+
+                if (object != null) {
+                    retVal = object.getName();
+                }
+                return retVal;
             }
 
-            public Group fromString(String string) {
-                return null;
+            public Group fromString(String groupName) {
+                return comboBoxGroup.getItems().stream()
+                        .filter(group -> group.getName().equalsIgnoreCase(groupName))
+                        .limit(1)
+                        .collect(toSingleton());
             }
         });
 
+
+        comboBoxGroup.getItems().addAll(groupService.getAll());
+
+//        comboBoxGroup.setEditable(true);
+        comboBoxMonth.setEditable(true);
+//        TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
+        TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
+
+        comboBoxMonth.getSelectionModel().selectFirst();
+        comboBoxGroup.getSelectionModel().selectFirst();
     }
 
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
+    }
 
     @FXML
-    void doReport(ActionEvent event) {
+    void doReport(ActionEvent event) throws IOException {
 
         Map<String, String> exportGroupSettings = new HashMap<>();
         exportGroupSettings.put("xlsArea", "ВедомостьМесяцГруппа!A1:AJ10");
@@ -118,18 +160,35 @@ public class GroupMonthReportViewController implements FxInitializable {
         exportGroupSettings.put("disciplineAreaEachArea", "A9:AJ9");
 
 
-        String fileName = "GroupsReports.xls";
+        String fileName = "ОтчётыПоГруппе" + comboBoxMonth.getValue() + ".xls";
+        File copiedFile = null;
 
-        File outputFile = new File(userPreferencesService.getTeacherReportPath(), fileName);
+        File outputFile = new File(userPreferencesService.getGroupReportFolderPath(), fileName);
+
+        String outputFilePath = outputFile.getAbsolutePath();
+        String inputFilePath = userPreferencesService.getGroupReportTemplateFilePath();
+
+        //If template is in output file it need to copy because one file for 2 streams it's too hard
+        if (inputFilePath.equals(outputFilePath) || outputFile.exists() && isWorksheetContainsReports(outputFilePath)) {
+
+            copiedFile = new File(userPreferencesService.getGroupReportFolderPath(), "Template.xls");
+            Files.copy(outputFile.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            inputFilePath = copiedFile.getAbsolutePath();
+        }
 
         monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
                 comboBoxGroup.getSelectionModel().getSelectedItem().getName(),
                 disciplineService.getDisciplinesByGroupName(comboBoxGroup.getSelectionModel().getSelectedItem().getName()),
                 exportGroupSettings,
-                userPreferencesService.getGroupReportTemplateFilePath(),
-                outputFile.getAbsolutePath());
+                inputFilePath,
+                outputFilePath);
 
-        monthReporterService.clearAllZeroCell(outputFile.getAbsolutePath(), comboBoxGroup.getSelectionModel().getSelectedItem().getName(), 8, 4);
+        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxGroup.getSelectionModel().getSelectedItem().getName(), 8, 4);
+
+        if (copiedFile != null && !copiedFile.delete()) {
+            log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
+
+        }
     }
 
     @FXML
@@ -149,6 +208,16 @@ public class GroupMonthReportViewController implements FxInitializable {
         if (selectedDirectory != null) {
             txtPath.setText(selectedDirectory.getAbsolutePath());
             userPreferencesService.setGroupReportTemplateFilePath(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    @SneakyThrows
+    private boolean isWorksheetContainsReports(String worksheetPath) {
+        try (InputStream workbookStream = new FileInputStream(new File(worksheetPath))) {
+
+            try (Workbook hssfInputWorkbook = WorkbookFactory.create(workbookStream)) {
+                return hssfInputWorkbook.getNumberOfSheets() > 1;
+            }
         }
     }
 }

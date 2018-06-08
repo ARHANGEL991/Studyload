@@ -16,6 +16,7 @@ public enum LangProperties {
     CLEAR_SELECTION("javafx.action.clear.selection"),
     CLOSE("javafx.action.close"),
     DELETE("javafx.action.delete"),
+    HIDE("javafx.action.hide"),
     HAS_BEEN_PROCESSED_WITH_PARAM("javafx.action.has.been.processed"),
     HAS_BEEN_PROCESSED("javafx.notification.warning.has.been.processed"),
     LOADING("javafx.action.load"),
@@ -43,6 +44,7 @@ public enum LangProperties {
     QUESTION_ARE_YOU_SURE("javafx.notification.question.sure"),
     SUCESSED_REMOVE_WITH_PARAM("javafx.notification.success.remove"),
     SUCESSED_SAVE_WITH_PARAM("javafx.notification.success.save"),
+    SUCESSED_SAVE("javafx.notification.success.saved"),
     SUCESSED_SAVE_WITH_PARAMS("javafx.notification.success.save.item"),
     SUCESSED_UPDATE_WITH_PARAM("javafx.notification.success.update"),
     SUCESSED_UPDATE_WITH_PARAMS("javafx.notification.success.update.item"),
@@ -67,6 +69,7 @@ public enum LangProperties {
     HELP("scene.home.menu.help"),
     CONTACT("scene.home.menu.help"),
     LIST_OF_DISCIPLINES("scene.home.menu.master.plan"),
+    LIST_OF_DISCIPLINES_LOADING("scene.home.menu.master.plan.load"),
     DATA_AN_ACCOUNT("scene.home.menu.setting.account.an-account"),
     IS_ACTIVE("java.model.account.is.active"),
     ID("java.model.id"),
@@ -95,7 +98,6 @@ public enum LangProperties {
     QTY_OF_ITEM_LESS_THAN_PARAMS("javafx.notification.warning.item.min"),
     PROCESS("javafx.action.processed"),
     NOT_READY("javafx.action.not.ready"),
-    READY_FOR_SALE("javafx.action.ready.for.sale"),
     DATA_DISCIPLINE("java.model.discipline.name"),
     DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete");
 

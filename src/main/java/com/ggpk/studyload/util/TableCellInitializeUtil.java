@@ -4,6 +4,7 @@ import com.ggpk.studyload.model.Discipline;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public final class TableCellInitializeUtil {
 

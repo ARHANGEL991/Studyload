@@ -13,6 +13,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Component;
@@ -21,18 +22,18 @@ import java.util.Locale;
 
 
 @Component
-public class TableViewColumnActionImpl implements MessageSourceAware, TableViewColumnAction {
+public class TableViewColumnActionImpl implements TableViewColumnAction {
 
     private Hyperlink updateLink;
     private Hyperlink deleteLink;
+    private Hyperlink hideLink;
     private Button detailLink;
     private ToggleButton onOff;
     private CheckBox checklist;
     private MessageSource messageSource;
 
-
-    @Override
-    public void setMessageSource(MessageSource messageSource) {
+    @Autowired
+    public TableViewColumnActionImpl(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
@@ -42,6 +43,10 @@ public class TableViewColumnActionImpl implements MessageSourceAware, TableViewC
 
     public Hyperlink getDeleteLink() {
         return deleteLink;
+    }
+
+    public Hyperlink getHideLink() {
+        return hideLink;
     }
 
     public Button getDetailLink() {
@@ -111,6 +116,19 @@ public class TableViewColumnActionImpl implements MessageSourceAware, TableViewC
 
         box.getChildren().add(updateLink);
         box.getChildren().add(deleteLink);
+        return box;
+    }
+
+    public Node getDefaultHideTableModel() {
+        HBox box = new HBox(5);
+        box.setAlignment(Pos.CENTER);
+
+        hideLink = new Hyperlink();
+        hideLink.setText(messageSource.getMessage(LangProperties.HIDE.getValue(), null, Locale.getDefault()));
+        hideLink.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.COMPRESS));
+        hideLink.setTextFill(Color.BLUE);
+
+        box.getChildren().add(hideLink);
         return box;
     }
 
