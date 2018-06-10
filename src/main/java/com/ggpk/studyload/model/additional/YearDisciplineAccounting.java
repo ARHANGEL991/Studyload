@@ -50,7 +50,7 @@ public class YearDisciplineAccounting extends BaseEntity implements IYearDiscipl
     }
 
     public double getMonthAccountingSum(Month month) {
-        return Arrays.stream(yearAccounting.get(month)).sum();
+        return Arrays.stream(getMonthAccounting(month)).sum();
     }
 
 }

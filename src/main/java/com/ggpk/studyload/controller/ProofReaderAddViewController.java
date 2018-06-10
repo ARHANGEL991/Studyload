@@ -23,7 +23,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 @FXMLController
@@ -142,7 +141,7 @@ public class ProofReaderAddViewController implements FxInitializable {
 
         disciplineService.save(discipline);
 
-        dialogBalloon.succeedSave(messageSource.getMessage(LangProperties.SUCESSED_SAVE.getValue(), null, Locale.getDefault()));
+        dialogBalloon.succeed(LangProperties.SUCESSED_SAVED.getValue());
 
     }
 
