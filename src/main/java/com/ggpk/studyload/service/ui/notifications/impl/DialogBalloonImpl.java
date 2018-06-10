@@ -96,11 +96,31 @@ public class DialogBalloonImpl implements DialogBalloon {
     }
 
     /**
-     * @param title form {scene.xxx.text}  file /lang/language_ru_RU.properties
+     * @param message form {scene.xxx.text}  file /lang/language_ru_RU.properties
      */
+
+    public void succeed(String message) {
+        setTitle(messageSource.getMessage(LangProperties.SUCCESS.getValue(), null, Locale.getDefault()));
+        setMessage(messageSource.getMessage(message, new Object[]{getTitle()}, Locale.getDefault()));
+        showInformation();
+    }
+
+    public void info(String title, String message) {
+        setTitle(messageSource.getMessage(title, null, Locale.getDefault()));
+        setMessage(messageSource.getMessage(message, new Object[]{getTitle()}, Locale.getDefault()));
+        showInformation();
+    }
+
+
     public void succeedSave(String title) {
         setTitle(messageSource.getMessage(title, null, Locale.getDefault()));
         setMessage(messageSource.getMessage(LangProperties.SUCESSED_SAVE_WITH_PARAM.getValue(), new Object[]{getTitle()}, Locale.getDefault()));
+        showInformation();
+    }
+
+    public void succeedSave() {
+        setTitle(messageSource.getMessage(LangProperties.SAVING.getValue(), null, Locale.getDefault()));
+        setMessage(messageSource.getMessage(LangProperties.SUCESSED_SAVED.getValue(), new Object[]{getTitle()}, Locale.getDefault()));
         showInformation();
     }
 
