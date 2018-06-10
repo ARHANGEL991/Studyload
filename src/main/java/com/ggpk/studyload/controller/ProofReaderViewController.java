@@ -14,8 +14,6 @@ import com.ggpk.studyload.util.EditCell;
 import com.ggpk.studyload.util.TableCellInitializeUtil;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -33,8 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @FXMLController
 @Slf4j
@@ -548,10 +544,10 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
             if (empty) {
                 setGraphic(null);
             } else {
-                Discipline discipline = (Discipline) table.getItems().get(getIndex());
+                Discipline disciplineFromRow = (Discipline) table.getItems().get(getIndex());
                 setGraphic(tableViewColumnAction.getDefaultHideTableModel());
 
-                tableViewColumnAction.getHideLink().setOnAction((ActionEvent event) -> table.getItems().remove(discipline));
+                tableViewColumnAction.getHideLink().setOnAction((ActionEvent event) -> table.getItems().remove(disciplineFromRow));
             }
         }
     }

@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
@@ -38,6 +39,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @FXMLController
 @Slf4j
@@ -113,20 +116,47 @@ public class GroupMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxGroup.getItems().addAll(groupService.getAll());
         comboBoxGroup.setConverter(new StringConverter<Group>() {
             public String toString(Group object) {
-                return object.getName();
+                String retVal = "";
+
+                if (object != null) {
+                    retVal = object.getName();
+                }
+                return retVal;
             }
 
-            public Group fromString(String string) {
-                return null;
+            public Group fromString(String groupName) {
+                return comboBoxGroup.getItems().stream()
+                        .filter(group -> group.getName().equalsIgnoreCase(groupName))
+                        .limit(1)
+                        .collect(toSingleton());
             }
         });
 
+
+        comboBoxGroup.getItems().addAll(groupService.getAll());
+
+//        comboBoxGroup.setEditable(true);
+        comboBoxMonth.setEditable(true);
+//        TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
+        TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
+
         comboBoxMonth.getSelectionModel().selectFirst();
+        comboBoxGroup.getSelectionModel().selectFirst();
     }
 
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
+    }
 
     @FXML
     void doReport(ActionEvent event) throws IOException {
