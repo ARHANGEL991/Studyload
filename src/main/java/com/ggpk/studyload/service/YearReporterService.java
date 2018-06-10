@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface YearReporterService {
 
-    void createYearStatement(Month month, Year year, String exportEntityName,
+    void createYearStatement(Year year, String exportEntityName,
                              List<Discipline> groupDisciplines,
                              Map<String, String> exportBookSettings,
                              String inputTemplatePath,
