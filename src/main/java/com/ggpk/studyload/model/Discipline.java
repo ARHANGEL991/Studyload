@@ -3,16 +3,16 @@ package com.ggpk.studyload.model;
 
 import com.ggpk.studyload.model.enums.DisciplineType;
 import com.ggpk.studyload.model.interfaces.IDiscipline;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "academicYear")
+@Builder
 public class Discipline extends BaseEntity implements IDiscipline<AcademicYear, Group, DisciplineGroup> {
 
 
