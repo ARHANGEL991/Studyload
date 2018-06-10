@@ -5,6 +5,8 @@ import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.GroupService;
 import com.ggpk.studyload.service.MonthReporterService;
 import com.ggpk.studyload.service.UserPreferencesService;
+import com.ggpk.studyload.service.impl.LangProperties;
+import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
@@ -70,9 +72,13 @@ public class GroupMonthReportViewController implements FxInitializable {
 
     private final UserPreferencesService userPreferencesService;
 
+    private final DialogBalloon dialogBalloon;
+
+
+
 
     @Autowired
-    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService) {
+    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.groupService = groupService;
@@ -80,6 +86,7 @@ public class GroupMonthReportViewController implements FxInitializable {
 
         this.homeView = homeView;
         this.disciplineService = disciplineService;
+        this.dialogBalloon = dialogBalloon;
     }
 
 
@@ -189,6 +196,7 @@ public class GroupMonthReportViewController implements FxInitializable {
             log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
 
         }
+        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
     }
 
     @FXML

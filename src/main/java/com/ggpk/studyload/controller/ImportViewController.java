@@ -1,6 +1,8 @@
 package com.ggpk.studyload.controller;
 
 import com.ggpk.studyload.service.*;
+import com.ggpk.studyload.service.impl.LangProperties;
+import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
@@ -12,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -62,6 +65,9 @@ public class ImportViewController implements FxInitializable {
 
     private final DataSource dataSource;
 
+    private final DialogBalloon dialogBalloon;
+
+    private final MessageSource messageSource;
 
     @Autowired
     public ImportViewController(UserPreferencesService userPreferencesService,
@@ -73,7 +79,7 @@ public class ImportViewController implements FxInitializable {
                                 TeacherService teacherService,
                                 Environment environment,
                                 JdbcTemplate jdbcTemplate,
-                                DataSource dataSource) {
+                                DataSource dataSource, DialogBalloon dialogBalloon, MessageSource messageSource) {
         this.userPreferencesService = userPreferencesService;
         this.academicYearSheetConverter = academicYearSheetConverter;
         this.homeView = homeView;
@@ -85,6 +91,8 @@ public class ImportViewController implements FxInitializable {
         this.environment = environment;
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
+        this.dialogBalloon = dialogBalloon;
+        this.messageSource = messageSource;
     }
 
 
@@ -100,6 +108,8 @@ public class ImportViewController implements FxInitializable {
     @FXML
     void doImport(ActionEvent event) {
 
+        dialogBalloon.warningMessage(LangProperties.IMPORT.getValue(),
+                LangProperties.START_IMPORT.getValue(), null);
         backupDB();
 
         disciplineService.deleteAll();
@@ -113,7 +123,7 @@ public class ImportViewController implements FxInitializable {
                                 spinnerSheetNumber.getValue()
                         )
                 ));
-
+        dialogBalloon.succeed(LangProperties.SUCESSED_IMPORTED.getValue());
 
     }
 

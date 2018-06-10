@@ -12,6 +12,12 @@ public interface DialogBalloon {
 
     void succeedSave(String title);
 
+    void succeedSave();
+
+    void succeed(String message);
+
+    void info(String title, String message);
+
     void succeedSave(String title, String value);
 
     void succeedSave(String title, String columnProperty, Object value);

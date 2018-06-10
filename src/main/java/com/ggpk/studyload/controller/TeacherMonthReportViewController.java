@@ -5,6 +5,8 @@ import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.MonthReporterService;
 import com.ggpk.studyload.service.TeacherService;
 import com.ggpk.studyload.service.UserPreferencesService;
+import com.ggpk.studyload.service.impl.LangProperties;
+import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
@@ -65,10 +67,13 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
 
     private final UserPreferencesService userPreferencesService;
+    private final DialogBalloon dialogBalloon;
+
+
 
 
     @Autowired
-    public TeacherMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, TeacherService teacherService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService) {
+    public TeacherMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, TeacherService teacherService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.teacherService = teacherService;
@@ -76,6 +81,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
         this.homeView = homeView;
         this.disciplineService = disciplineService;
+        this.dialogBalloon = dialogBalloon;
     }
 
 
@@ -150,6 +156,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
         doMonthReport(exportTeacherReportSettings, fileName);
 
+        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
     }
 
     private void doMonthReport(Map<String, String> exportTeacherReportSettings, String fileName) {
