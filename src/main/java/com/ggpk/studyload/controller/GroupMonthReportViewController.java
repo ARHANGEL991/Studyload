@@ -5,6 +5,8 @@ import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.GroupService;
 import com.ggpk.studyload.service.MonthReporterService;
 import com.ggpk.studyload.service.UserPreferencesService;
+import com.ggpk.studyload.service.impl.LangProperties;
+import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
@@ -19,6 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
@@ -36,6 +39,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @FXMLController
 @Slf4j
@@ -67,9 +72,13 @@ public class GroupMonthReportViewController implements FxInitializable {
 
     private final UserPreferencesService userPreferencesService;
 
+    private final DialogBalloon dialogBalloon;
+
+
+
 
     @Autowired
-    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService) {
+    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.groupService = groupService;
@@ -77,6 +86,7 @@ public class GroupMonthReportViewController implements FxInitializable {
 
         this.homeView = homeView;
         this.disciplineService = disciplineService;
+        this.dialogBalloon = dialogBalloon;
     }
 
 
@@ -106,19 +116,47 @@ public class GroupMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxGroup.getItems().addAll(groupService.getAll());
         comboBoxGroup.setConverter(new StringConverter<Group>() {
             public String toString(Group object) {
-                return object.getName();
+                String retVal = "";
+
+                if (object != null) {
+                    retVal = object.getName();
+                }
+                return retVal;
             }
 
-            public Group fromString(String string) {
-                return null;
+            public Group fromString(String groupName) {
+                return comboBoxGroup.getItems().stream()
+                        .filter(group -> group.getName().equalsIgnoreCase(groupName))
+                        .limit(1)
+                        .collect(toSingleton());
             }
         });
 
+
+        comboBoxGroup.getItems().addAll(groupService.getAll());
+
+//        comboBoxGroup.setEditable(true);
+        comboBoxMonth.setEditable(true);
+//        TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
+        TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
+
+        comboBoxMonth.getSelectionModel().selectFirst();
+        comboBoxGroup.getSelectionModel().selectFirst();
     }
 
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
+    }
 
     @FXML
     void doReport(ActionEvent event) throws IOException {
@@ -129,7 +167,7 @@ public class GroupMonthReportViewController implements FxInitializable {
         exportGroupSettings.put("disciplineAreaEachArea", "A9:AJ9");
 
 
-        String fileName = "GroupsReports.xls";
+        String fileName = "ОтчётыПоГруппе" + comboBoxMonth.getValue() + ".xls";
         File copiedFile = null;
 
         File outputFile = new File(userPreferencesService.getGroupReportFolderPath(), fileName);
@@ -158,6 +196,7 @@ public class GroupMonthReportViewController implements FxInitializable {
             log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
 
         }
+        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
     }
 
     @FXML

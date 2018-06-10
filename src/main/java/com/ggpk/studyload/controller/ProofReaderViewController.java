@@ -4,6 +4,7 @@ package com.ggpk.studyload.controller;
 import com.ggpk.studyload.model.Discipline;
 import com.ggpk.studyload.model.additional.YearDisciplineAccounting;
 import com.ggpk.studyload.service.DisciplineService;
+import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.TableViewColumnAction;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.DialogWindow;
@@ -152,6 +153,9 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     private TableColumn<Discipline, Double> columnMonthSum;
 
     @FXML
+    private TableColumn<Discipline, Double> columnYearSum;
+
+    @FXML
     private TableColumn<?, ?> columnAction;
 
     @FXML
@@ -173,6 +177,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
 
     private List<TableColumn<Discipline, Double>> daysColumns;
+
+    private List<Discipline> disciplines;
 
     private Discipline discipline;
 
@@ -242,7 +248,12 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
         );
 
         choiseBoxMonth.getSelectionModel().selectFirst();
+        setSumColumnsCellFactory();
 
+
+    }
+
+    private void setSumColumnsCellFactory() {
         columnMonthSum.setCellValueFactory(param -> {
             SimpleObjectProperty<Double> retVal = new SimpleObjectProperty<>();
             if (param != null) {
@@ -256,7 +267,7 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                 } else {
                     sum = param.getValue()
                             .getFullGroup()
-                            .getYearDisciplineAccounting()
+                            .getYearDisciplineAccountingAdditionalControl()
                             .getMonthAccountingSum(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
                 }
 
@@ -268,7 +279,30 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
             return retVal;
         });
 
+        columnYearSum.setCellValueFactory(param -> {
+            SimpleObjectProperty<Double> retVal = new SimpleObjectProperty<>();
+            if (param != null) {
+                double sum;
 
+                if (radioBtnWithoutDK.isSelected()) {
+                    sum = param.getValue()
+                            .getFullGroup()
+                            .getYearDisciplineAccounting()
+                            .getYearAccountingSum();
+                } else {
+                    sum = param.getValue()
+                            .getFullGroup()
+                            .getYearDisciplineAccountingAdditionalControl()
+                            .getYearAccountingSum();
+                }
+
+                if (sum > 0) {
+                    retVal = new SimpleObjectProperty<>(sum);
+                }
+
+            }
+            return retVal;
+        });
     }
 
     private void setMonthDayColumnsCellFactory() {
@@ -318,29 +352,37 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                 double[] monthAccounting;
                 if (event.getTablePosition() != null) {
                     if (radioBtnWithoutDK.isSelected()) {
-                        monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
-                                .getFullGroup()
-                                .getYearDisciplineAccounting()
-                                .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
                         if (event.getNewValue() != null) {
+                            monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
+                                    .getFullGroup()
+                                    .getYearDisciplineAccounting()
+                                    .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
+
                             monthAccounting[finalI] = event.getNewValue();
+
+                            event.getTableView().getItems().get(event.getTablePosition().getRow())
+                                    .getFullGroup()
+                                    .getYearDisciplineAccounting().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
+                            event.getTableView().getColumns().get(0).setVisible(false);
+                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
-                        event.getTableView().getItems().get(event.getTablePosition().getRow())
-                                .getFullGroup()
-                                .getYearDisciplineAccounting().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
                     } else {
-                        monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
-                                .getFullGroup()
-                                .getYearDisciplineAccountingAdditionalControl()
-                                .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
                         if (event.getNewValue() != null) {
+                            monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
+                                    .getFullGroup()
+                                    .getYearDisciplineAccountingAdditionalControl()
+                                    .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
+
                             monthAccounting[finalI] = event.getNewValue();
+
+                            event.getTableView().getItems().get(event.getTablePosition().getRow())
+                                    .getFullGroup()
+                                    .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
+                            event.getTableView().getColumns().get(0).setVisible(false);
+                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
-                        event.getTableView().getItems().get(event.getTablePosition().getRow())
-                                .getFullGroup()
-                                .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
                     }
 
 
@@ -369,7 +411,7 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
         TableCellInitializeUtil.columnTeacherNameInitialize(columnTeacherName);
 
 
-        columnAction.setCellFactory(param -> new ColumnActionDiscipline(tableView, tableViewColumnAction, dialogBalloon, dialogWindow, disciplineService, this::searchData));
+        columnAction.setCellFactory(param -> new ColumnActionHideDiscipline(tableView, tableViewColumnAction, dialogBalloon, dialogWindow, disciplineService, this::searchData));
 
     }
 
@@ -419,7 +461,7 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     @FXML
     public void searchData() {
 
-        List<Discipline> disciplines = disciplineService.getDisciplinesByGroupNameLike(txtSearch.getText().trim());
+        disciplines = disciplineService.getDisciplinesByGroupNameLike(txtSearch.getText().trim());
 
         if (disciplines.isEmpty()) {
             disciplines = disciplineService.getDisciplinesByTeacherNameLike(txtSearch.getText());
@@ -462,12 +504,52 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
             disciplineService.saveAll(tableView.getItems());
             isEdited = false;
+
+            dialogBalloon.succeedSave();
         }
     }
 
     @FXML
     public void tableViewClearSelection(ActionEvent event) {
         tableView.getSelectionModel().clearSelection();
+    }
+
+    class ColumnActionHideDiscipline<T> extends TableCell<T, String> {
+
+        private TableView table;
+        private TableViewColumnAction tableViewColumnAction;
+        private DialogBalloon dialogBalloon;
+        private DialogWindow dialogWindow;
+        private DisciplineService disciplineService;
+        private Runnable loadData;
+
+        public ColumnActionHideDiscipline(TableView table,
+                                          TableViewColumnAction tableViewColumnAction,
+                                          DialogBalloon dialogBalloon,
+                                          DialogWindow dialogWindow,
+                                          DisciplineService disciplineService,
+                                          Runnable loadData) {
+
+            this.table = table;
+            this.tableViewColumnAction = tableViewColumnAction;
+            this.dialogBalloon = dialogBalloon;
+            this.dialogWindow = dialogWindow;
+            this.disciplineService = disciplineService;
+            this.loadData = loadData;
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                Discipline disciplineFromRow = (Discipline) table.getItems().get(getIndex());
+                setGraphic(tableViewColumnAction.getDefaultHideTableModel());
+
+                tableViewColumnAction.getHideLink().setOnAction((ActionEvent event) -> table.getItems().remove(disciplineFromRow));
+            }
+        }
     }
 
 

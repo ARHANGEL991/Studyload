@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -89,7 +103,9 @@
                         </TableColumn>
                         <TableColumn fx:id="columnMonthSum" editable="false" maxWidth="75.0" minWidth="40.0"
                                      prefWidth="75.0" text="%scene.home.menu.master.proof-reading.sum"/>
-                        <TableColumn fx:id="columnAction" maxWidth="200.0" minWidth="100.0" prefWidth="95.0"
+                        <TableColumn fx:id="columnYearSum" editable="false" maxWidth="75.0" minWidth="40.0"
+                                     prefWidth="75.0" text="%scene.home.menu.master.proof-reading.totalYearSum"/>
+                        <TableColumn fx:id="columnAction" maxWidth="200.0" minWidth="50.0" prefWidth="95.0"
                                      sortable="false" text="%javafx.action.do">
                             <graphic>
                                 <FontAwesomeIconView glyphName="TASKS" size="14"/>
