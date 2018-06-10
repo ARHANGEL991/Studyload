@@ -156,6 +156,7 @@ public class MonthReporterServiceImpl implements MonthReporterService {
 
                     Row row = CellUtil.getRow(rowCounter, sheet);
                     row.setRowStyle(style);
+                    row.setHeight((short) -1);
                     if (row.getCell(2) != null) {
                         row.getCell(2).setCellStyle(style);
                     }
