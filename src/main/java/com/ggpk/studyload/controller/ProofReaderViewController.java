@@ -4,6 +4,7 @@ package com.ggpk.studyload.controller;
 import com.ggpk.studyload.model.Discipline;
 import com.ggpk.studyload.model.additional.YearDisciplineAccounting;
 import com.ggpk.studyload.service.DisciplineService;
+import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.TableViewColumnAction;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.DialogWindow;
@@ -507,6 +508,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
             disciplineService.saveAll(tableView.getItems());
             isEdited = false;
+
+            dialogBalloon.succeedSave();
         }
     }
 
