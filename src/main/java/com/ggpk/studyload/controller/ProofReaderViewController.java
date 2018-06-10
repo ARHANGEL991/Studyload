@@ -366,8 +366,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccounting().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
-                            event.getTableView().getItems().clear();
-                            event.getTableView().getItems().addAll(disciplines);
+                            event.getTableView().getColumns().get(0).setVisible(false);
+                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
                     } else {
@@ -382,8 +382,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
-                            event.getTableView().getItems().clear();
-                            event.getTableView().getItems().addAll(disciplines);
+                            event.getTableView().getColumns().get(0).setVisible(false);
+                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
                     }
