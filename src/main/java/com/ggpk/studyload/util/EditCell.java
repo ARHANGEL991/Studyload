@@ -158,12 +158,16 @@ public class EditCell<S, T> extends TextFieldTableCell<S, T> {
                 event.consume();
             } else if (event.getCode() == KeyCode.ENTER) {
                 commitEdit(getConverter().fromString(textField.getText()));
+                getTableView().getColumns().get(0).setVisible(false);
+                getTableView().getColumns().get(0).setVisible(true);
                 event.consume();
             } else if (event.getCode() == KeyCode.TAB) {
                 commitEdit(getConverter().fromString(textField.getText()));
                 TableColumn<S, ?> nextColumn = getNextColumn(!event.isShiftDown());
                 if (nextColumn != null) {
                     getTableView().edit(getTableRow().getIndex(), nextColumn);
+                    getTableView().getColumns().get(0).setVisible(false);
+                    getTableView().getColumns().get(0).setVisible(true);
                 }
                 event.consume();
             }
