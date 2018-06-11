@@ -1,5 +1,6 @@
 package com.ggpk.studyload.controller;
 
+import com.ggpk.studyload.model.Discipline;
 import com.ggpk.studyload.model.Group;
 import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.GroupService;
@@ -8,6 +9,7 @@ import com.ggpk.studyload.service.UserPreferencesService;
 import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
+import com.ggpk.studyload.ui.report.MonthGroupReportView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,10 +37,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.time.Month;
 import java.time.Year;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,7 @@ public class GroupMonthReportViewController implements FxInitializable {
     private ComboBox<String> comboBoxMonth;
 
     @FXML
-    private ComboBox<Group> comboBoxGroup;
+    private ComboBox<String> comboBoxGroup;
 
 
     private final MessageSource messageSource;
@@ -73,12 +72,11 @@ public class GroupMonthReportViewController implements FxInitializable {
     private final UserPreferencesService userPreferencesService;
 
     private final DialogBalloon dialogBalloon;
-
-
+    private final MonthGroupReportView monthGroupReportView;
 
 
     @Autowired
-    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon) {
+    public GroupMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, GroupService groupService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon, MonthGroupReportView monthGroupReportView) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.groupService = groupService;
@@ -87,6 +85,7 @@ public class GroupMonthReportViewController implements FxInitializable {
         this.homeView = homeView;
         this.disciplineService = disciplineService;
         this.dialogBalloon = dialogBalloon;
+        this.monthGroupReportView = monthGroupReportView;
     }
 
 
@@ -116,34 +115,17 @@ public class GroupMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxGroup.setConverter(new StringConverter<Group>() {
-            public String toString(Group object) {
-                String retVal = "";
 
-                if (object != null) {
-                    retVal = object.getName();
-                }
-                return retVal;
-            }
+        comboBoxGroup.getItems().addAll(groupService.getAll().stream().map(Group::getName).collect(Collectors.toList()));
 
-            public Group fromString(String groupName) {
-                return comboBoxGroup.getItems().stream()
-                        .filter(group -> group.getName().equalsIgnoreCase(groupName))
-                        .limit(1)
-                        .collect(toSingleton());
-            }
-        });
-
-
-        comboBoxGroup.getItems().addAll(groupService.getAll());
-
-//        comboBoxGroup.setEditable(true);
+        comboBoxGroup.setEditable(true);
         comboBoxMonth.setEditable(true);
-//        TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
+        TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
         TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
 
         comboBoxMonth.getSelectionModel().selectFirst();
         comboBoxGroup.getSelectionModel().selectFirst();
+
     }
 
     public static <T> Collector<T, ?, T> toSingleton() {
@@ -183,14 +165,21 @@ public class GroupMonthReportViewController implements FxInitializable {
             inputFilePath = copiedFile.getAbsolutePath();
         }
 
+        List<Discipline> disciplines = disciplineService.getDisciplinesByGroupName(comboBoxGroup.getSelectionModel().getSelectedItem());
+        if (disciplines.isEmpty()) {
+            dialogBalloon.warningMessage(LangProperties.ERROR.getValue(), LangProperties.ERROR_EXPORTING_EMPTY_DISCIPLINE.getValue(), null);
+            //Todo exception
+            return;
+        }
+
         monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
-                comboBoxGroup.getSelectionModel().getSelectedItem().getName(),
-                disciplineService.getDisciplinesByGroupName(comboBoxGroup.getSelectionModel().getSelectedItem().getName()),
+                comboBoxGroup.getSelectionModel().getSelectedItem(),
+                disciplines,
                 exportGroupSettings,
                 inputFilePath,
                 outputFilePath);
 
-        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxGroup.getSelectionModel().getSelectedItem().getName(), 8, 4);
+        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxGroup.getSelectionModel().getSelectedItem(), 8, 4);
 
         if (copiedFile != null && !copiedFile.delete()) {
             log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
