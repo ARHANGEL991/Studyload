@@ -126,9 +126,9 @@ public class TeacherMonthReportViewController implements FxInitializable {
         TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
         TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
 
-        comboBoxTeacher.getSelectionModel().selectFirst();
-
-        comboBoxMonth.getSelectionModel().selectFirst();
+//        comboBoxTeacher.getSelectionModel().selectFirst();
+//
+//        comboBoxMonth.getSelectionModel().selectFirst();
 
     }
 

@@ -123,8 +123,8 @@ public class GroupMonthReportViewController implements FxInitializable {
         TextFields.bindAutoCompletion(comboBoxGroup.getEditor(), comboBoxGroup.getItems());
         TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
 
-        comboBoxMonth.getSelectionModel().selectFirst();
-        comboBoxGroup.getSelectionModel().selectFirst();
+//        comboBoxMonth.getSelectionModel().selectFirst();
+//        comboBoxGroup.getSelectionModel().selectFirst();
 
     }
 

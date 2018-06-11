@@ -16,6 +16,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
@@ -33,7 +34,7 @@ import static com.ggpk.studyload.controller.GroupMonthReportViewController.toSin
 public class YearReportViewController implements FxInitializable {
 
     @FXML
-    private ComboBox<Teacher> comboBoxTeacher;
+    private ComboBox<String> comboBoxTeacher;
 
     @FXML
     private Text txtPath;
@@ -79,10 +80,15 @@ public class YearReportViewController implements FxInitializable {
     @FXML
     void doReport(ActionEvent event) {
 
-        List<Discipline> disciplines = disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getValue().getName());
+        List<Discipline> disciplines = disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getValue());
+        if (disciplines.isEmpty()) {
+            dialogBalloon.warningMessage(LangProperties.ERROR.getValue(), LangProperties.ERROR_EXPORTING_EMPTY_DISCIPLINE.getValue(), null);
+            //Todo exception
+            return;
+        }
         yearReporterService.createYearStatement(
                 Year.now(),
-                comboBoxTeacher.getValue().getName(),
+                comboBoxTeacher.getValue(),
                 disciplines,
                 templateSheetIndexSpinner.getValue(),
                 userPreferencesService.getYearReportTemplateFilePath(),
@@ -108,28 +114,12 @@ public class YearReportViewController implements FxInitializable {
 
     public void initialize(URL location, ResourceBundle resources) {
         templateSheetIndexSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100000, 1));
-        txtPath.setText(userPreferencesService.getTeacherReportFolderPath());
+        txtPath.setText(userPreferencesService.getYearReportTemplateFilePath());
 
-        comboBoxTeacher.setConverter(new StringConverter<Teacher>() {
-            public String toString(Teacher object) {
-                String retVal = "";
 
-                if (object != null) {
-                    retVal = object.getName();
-                }
-
-                return retVal;
-            }
-
-            public Teacher fromString(String teacherName) {
-                return comboBoxTeacher.getItems().stream()
-                        .filter(teacher -> teacher.getName().equalsIgnoreCase(teacherName))
-                        .limit(1)
-                        .collect(toSingleton());
-            }
-        });
-
-        comboBoxTeacher.getItems().addAll(teacherService.getAll().stream().sorted(Comparator.comparing(Teacher::getName)).collect(Collectors.toList()));
-        comboBoxTeacher.getSelectionModel().selectFirst();
+        comboBoxTeacher.getItems().addAll(teacherService.getAll().stream().map(Teacher::getName).collect(Collectors.toList()));
+        comboBoxTeacher.setEditable(true);
+        TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
+//        comboBoxTeacher.getSelectionModel().selectFirst();
     }
 }
