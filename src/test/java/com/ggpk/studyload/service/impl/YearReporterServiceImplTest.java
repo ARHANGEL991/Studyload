@@ -42,7 +42,7 @@ public class YearReporterServiceImplTest {
         yearReporterService.createYearStatement(null,
                 "Орехво В.Д.",
                 disciplineService.getDisciplinesByTeacherName("Орехво В.Д."),
-                null,
+                2,
                 INPUT_YEAR_GROUP_STATMENT_XLSX,
                 null);
     }
