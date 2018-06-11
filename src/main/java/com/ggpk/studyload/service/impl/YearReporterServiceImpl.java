@@ -31,7 +31,7 @@ public class YearReporterServiceImpl implements YearReporterService {
     public void createYearStatement(Year year,
                                     String exportEntityName,
                                     List<Discipline> disciplines,
-                                    Map<String, String> exportBookSettings,
+                                    int templateSheetIndex,
                                     String inputTemplatePath,
                                     String exportBookPath) {
 
@@ -61,7 +61,7 @@ public class YearReporterServiceImpl implements YearReporterService {
         try (InputStream workbookStream = new FileInputStream(new File(inputTemplatePath))) {
 
             try (HSSFWorkbook hssfInputWorkbook = new HSSFWorkbook(workbookStream)) {
-                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(1);
+                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(templateSheetIndex - 1);
 
                 if (hssfInputWorkbook.getSheet(exportEntityName) != null) {
                     hssfInputWorkbook.removeSheetAt(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet(exportEntityName)));

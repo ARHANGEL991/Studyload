@@ -11,7 +11,7 @@ public interface YearReporterService {
 
     void createYearStatement(Year year, String exportEntityName,
                              List<Discipline> groupDisciplines,
-                             Map<String, String> exportBookSettings,
+                             int templateSheetIndex,
                              String inputTemplatePath,
                              String exportBookPath);
 }
