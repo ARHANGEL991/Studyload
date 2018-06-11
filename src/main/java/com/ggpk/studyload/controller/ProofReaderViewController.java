@@ -4,7 +4,6 @@ package com.ggpk.studyload.controller;
 import com.ggpk.studyload.model.Discipline;
 import com.ggpk.studyload.model.additional.YearDisciplineAccounting;
 import com.ggpk.studyload.service.DisciplineService;
-import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.TableViewColumnAction;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.DialogWindow;
@@ -363,8 +362,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccounting().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
-                            event.getTableView().getColumns().get(0).setVisible(false);
-                            event.getTableView().getColumns().get(0).setVisible(true);
+//                            event.getTableView().getColumns().get(0).setVisible(false);
+//                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
                     } else {
@@ -379,8 +378,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
-                            event.getTableView().getColumns().get(0).setVisible(false);
-                            event.getTableView().getColumns().get(0).setVisible(true);
+//                            event.getTableView().getColumns().get(0).setVisible(false);
+//                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
 
                     }
