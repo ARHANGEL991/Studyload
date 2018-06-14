@@ -166,7 +166,6 @@ public class HomeController implements FxInitializable {
     @FXML
     void showTeacherHours(ActionEvent event) {
         showSceneInMenu(proofReaderView.getView());
-        proofReaderViewController.loadData();
     }
 
 

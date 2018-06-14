@@ -2,8 +2,13 @@ package com.ggpk.studyload.controller;
 
 
 import com.ggpk.studyload.model.Discipline;
+import com.ggpk.studyload.model.Group;
+import com.ggpk.studyload.model.Teacher;
 import com.ggpk.studyload.model.additional.YearDisciplineAccounting;
 import com.ggpk.studyload.service.DisciplineService;
+import com.ggpk.studyload.service.GroupService;
+import com.ggpk.studyload.service.TeacherService;
+import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.TableViewColumnAction;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.service.ui.notifications.DialogWindow;
@@ -17,8 +22,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.util.converter.DoubleStringConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -29,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @FXMLController
@@ -170,14 +181,15 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     private ToggleGroup termGroup;
 
 
-    private ChoiceBox<?> choiseBoxMonthSaved;
+    private Month choiseBoxMonthSaved;
 
-    private TextField txtSearchSaved;
+    private String txtSearchSaved;
 
 
     private List<TableColumn<Discipline, Double>> daysColumns;
 
     private List<Discipline> disciplines;
+    private List<String> groupAndTeachersNames;
 
     private Discipline discipline;
 
@@ -194,9 +206,13 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
     private final MessageSource messageSource;
 
+    private final GroupService groupService;
+
+    private final TeacherService teacherService;
+
 
     @Autowired
-    public ProofReaderViewController(DisciplineService disciplineService, DialogBalloon dialogBalloon, DialogWindow dialogWindow, TableViewColumnAction tableViewColumnAction, ApplicationEventPublisher applicationEventPublisher, ProofReaderAddView proofReaderAddView, MessageSource messageSource) {
+    public ProofReaderViewController(DisciplineService disciplineService, DialogBalloon dialogBalloon, DialogWindow dialogWindow, TableViewColumnAction tableViewColumnAction, ApplicationEventPublisher applicationEventPublisher, ProofReaderAddView proofReaderAddView, MessageSource messageSource, GroupService groupService, TeacherService teacherService) {
         this.disciplineService = disciplineService;
         this.dialogBalloon = dialogBalloon;
         this.dialogWindow = dialogWindow;
@@ -204,6 +220,8 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
         this.applicationEventPublisher = applicationEventPublisher;
         this.proofReaderAddView = proofReaderAddView;
         this.messageSource = messageSource;
+        this.groupService = groupService;
+        this.teacherService = teacherService;
     }
 
 
@@ -223,6 +241,18 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     }
 
     public void initialize(URL location, ResourceBundle resources) {
+
+        Label groupTypeLabel = new Label(messageSource.getMessage(LangProperties.GROUP_TYPE.getValue(), null, Locale.getDefault()));
+        groupTypeLabel.setTooltip(new Tooltip(groupTypeLabel.getText()));
+        columnGroupType.setGraphic(groupTypeLabel);
+
+        Label additionalControlLabel = new Label(messageSource.getMessage(LangProperties.ADDITIONAL_CONTROL.getValue(), null, Locale.getDefault()));
+        additionalControlLabel.setTooltip(new Tooltip(additionalControlLabel.getText()));
+        columnAdditionalControl.setGraphic(additionalControlLabel);
+
+        Label yearSumLabel = new Label(messageSource.getMessage(LangProperties.TOTAL_YEAR_SUM.getValue(), null, Locale.getDefault()));
+        yearSumLabel.setTooltip(new Tooltip(yearSumLabel.getText()));
+        columnYearSum.setGraphic(yearSumLabel);
 
         initializeDaysColumns();
 
@@ -249,6 +279,27 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
         choiseBoxMonth.getSelectionModel().selectFirst();
         setSumColumnsCellFactory();
 
+        final KeyCombination keySaveCombination = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN);
+
+        tableView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (keySaveCombination.match(event)) {
+                saveData();
+            }
+        });
+
+        groupAndTeachersNames = groupService.getAll().stream().map(Group::getName).collect(Collectors.toList());
+        groupAndTeachersNames.addAll(teacherService.getAll().stream().map(Teacher::getName).collect(Collectors.toList()));
+
+        TextFields.bindAutoCompletion(txtSearch, groupAndTeachersNames);
+
+        txtSearch.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ENTER) {
+                        searchData();
+                        event.consume();
+                    }
+                }
+        );
 
     }
 
@@ -322,13 +373,13 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                         hoursInDay = param.getValue()
                                 .getFullGroup()
                                 .getYearDisciplineAccounting()
-                                .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1))[finalI];//get index of selected month
+                                .getMonthAccounting(choiseBoxMonthSaved)[finalI];//get index of selected month
 
                     } else {
                         hoursInDay = param.getValue()
                                 .getFullGroup()
                                 .getYearDisciplineAccountingAdditionalControl()
-                                .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1))[finalI];  //get index of selected month and then get monthacc
+                                .getMonthAccounting(choiseBoxMonthSaved)[finalI];  //get index of selected month and then get monthacc
 
                     }
 
@@ -355,13 +406,13 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccounting()
-                                    .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
+                                    .getMonthAccounting(choiseBoxMonthSaved);
 
                             monthAccounting[finalI] = event.getNewValue();
 
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
-                                    .getYearDisciplineAccounting().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
+                                    .getYearDisciplineAccounting().setMonthAccounting(choiseBoxMonthSaved, monthAccounting);
 //                            event.getTableView().getColumns().get(0).setVisible(false);
 //                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
@@ -371,13 +422,13 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                             monthAccounting = event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
                                     .getYearDisciplineAccountingAdditionalControl()
-                                    .getMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1));
+                                    .getMonthAccounting(choiseBoxMonthSaved);
 
                             monthAccounting[finalI] = event.getNewValue();
 
                             event.getTableView().getItems().get(event.getTablePosition().getRow())
                                     .getFullGroup()
-                                    .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1), monthAccounting);
+                                    .getYearDisciplineAccountingAdditionalControl().setMonthAccounting(choiseBoxMonthSaved, monthAccounting);
 //                            event.getTableView().getColumns().get(0).setVisible(false);
 //                            event.getTableView().getColumns().get(0).setVisible(true);
                         }
@@ -453,17 +504,27 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     }
 
     @FXML
-    public void loadData() {
+    public void reloadData() {
+        loadData(txtSearchSaved);
+    }
 
+    public void loadData() {
+        //Fix interface
     }
 
     @FXML
     public void searchData() {
 
-        disciplines = disciplineService.getDisciplinesByGroupNameLike(txtSearch.getText().trim());
+        txtSearchSaved = txtSearch.getText().trim();
+        choiseBoxMonthSaved = Month.of(choiseBoxMonth.getItems().indexOf(choiseBoxMonth.getValue()) + 1);
+        loadData(txtSearchSaved);
+    }
+
+    private void loadData(String searchingEntityName) {
+        disciplines = disciplineService.getDisciplinesByGroupNameLike(searchingEntityName);
 
         if (disciplines.isEmpty()) {
-            disciplines = disciplineService.getDisciplinesByTeacherNameLike(txtSearch.getText());
+            disciplines = disciplineService.getDisciplinesByTeacherNameLike(searchingEntityName);
         }
         if (radioBtnWithoutDK.isSelected()) {
 
@@ -498,13 +559,17 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
 
     @FXML
-    public void saveData(ActionEvent event) {
+    public void saveData() {
         if (!tableView.getItems().isEmpty()) {
 
             disciplineService.saveAll(tableView.getItems());
             isEdited = false;
 
             dialogBalloon.succeedSave();
+
+            txtSearch.setText(txtSearchSaved);
+            choiseBoxMonth.getSelectionModel().select(choiseBoxMonthSaved.getValue() - 1);
+            searchData();
         }
     }
 
