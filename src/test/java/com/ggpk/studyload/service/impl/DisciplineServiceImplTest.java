@@ -30,8 +30,6 @@ public class DisciplineServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Teacher teacher = new Teacher();
-//        teacherService.save(teacher);
         AcademicYear academicYear = new AcademicYear();
         Group group = new Group();
         Discipline discipline = new Discipline();
@@ -43,11 +41,8 @@ public class DisciplineServiceImplTest {
         discipline2.setGroup(group);
         discipline.setAcademicYear(academicYear);
         discipline.setFullGroup(new DisciplineGroup());
-        discipline.getFullGroup().setTeacher(teacher);
         discipline1.setFullGroup(new DisciplineGroup());
-        discipline1.getFullGroup().setTeacher(teacher);
         discipline2.setFullGroup(new DisciplineGroup());
-        discipline2.getFullGroup().setTeacher(teacher);
         discipline1.setAcademicYear(academicYear);
         discipline2.setAcademicYear(academicYear);
 

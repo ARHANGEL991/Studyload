@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,10 @@ public class AcademicYearServiceImplTest {
         academicYear2 = new AcademicYear();
         academicYear2.setStartYear(Year.parse("2018"));
         academicYear2.setEndYear(Year.parse("2019"));
-        academicYears = Arrays.asList(academicYear, academicYear2);
+        academicYears = new ArrayList<>();
+        academicYears.add(academicYear);
+        academicYears.add(academicYear2);
+        academicYearService.deleteAll();
 
     }
 
