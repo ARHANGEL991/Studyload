@@ -37,6 +37,8 @@ public enum LangProperties {
     IMPORT("scene.home.menu.import"),
     EXPORTING("javafx.action.exporting"),
     VIEW("javafx.action.view"),
+    ERROR("javafx.notification.error"),
+    ERROR_EXPORTING_EMPTY_DISCIPLINE("javafx.notification.error.export.emptyDisciplines"),
     START_IMPORT("javafx.notification.start.import"),
     START_EXPORT("javafx.notification.start.export"),
     ERROR_LOADING_WITH_PARAM("javafx.notification.error.loading"),

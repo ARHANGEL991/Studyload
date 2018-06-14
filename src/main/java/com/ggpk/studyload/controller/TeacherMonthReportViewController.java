@@ -1,5 +1,6 @@
 package com.ggpk.studyload.controller;
 
+import com.ggpk.studyload.model.Discipline;
 import com.ggpk.studyload.model.Teacher;
 import com.ggpk.studyload.service.DisciplineService;
 import com.ggpk.studyload.service.MonthReporterService;
@@ -8,6 +9,7 @@ import com.ggpk.studyload.service.UserPreferencesService;
 import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
+import com.ggpk.studyload.ui.report.MonthTeacherReportView;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,7 +58,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
     private ComboBox<String> comboBoxMonth;
 
     @FXML
-    private ComboBox<Teacher> comboBoxTeacher;
+    private ComboBox<String> comboBoxTeacher;
 
 
     private final MessageSource messageSource;
@@ -69,11 +71,15 @@ public class TeacherMonthReportViewController implements FxInitializable {
     private final UserPreferencesService userPreferencesService;
     private final DialogBalloon dialogBalloon;
 
+    private final MonthTeacherReportView monthTeacherReportView;
+
+
+
 
 
 
     @Autowired
-    public TeacherMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, TeacherService teacherService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon) {
+    public TeacherMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, TeacherService teacherService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon, MonthTeacherReportView monthTeacherReportView) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.teacherService = teacherService;
@@ -82,6 +88,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
         this.homeView = homeView;
         this.disciplineService = disciplineService;
         this.dialogBalloon = dialogBalloon;
+        this.monthTeacherReportView = monthTeacherReportView;
     }
 
 
@@ -111,34 +118,17 @@ public class TeacherMonthReportViewController implements FxInitializable {
                 messageSource.getMessage("scene.month.december", null, Locale.getDefault())
         );
 
-        comboBoxTeacher.setConverter(new StringConverter<Teacher>() {
-            public String toString(Teacher object) {
-                String retVal = "";
 
-                if (object != null) {
-                    retVal = object.getName();
-                }
+        comboBoxTeacher.getItems().addAll(teacherService.getAll().stream().map(Teacher::getName).collect(Collectors.toList()));
 
-                return retVal;
-            }
-
-            public Teacher fromString(String teacherName) {
-                return comboBoxTeacher.getItems().stream()
-                        .filter(teacher -> teacher.getName().equalsIgnoreCase(teacherName))
-                        .limit(1)
-                        .collect(toSingleton());
-            }
-        });
-        comboBoxTeacher.getItems().addAll(teacherService.getAll().stream().sorted(Comparator.comparing(Teacher::getName)).collect(Collectors.toList()));
-
-//        comboBoxTeacher.setEditable(true);
+        comboBoxTeacher.setEditable(true);
         comboBoxMonth.setEditable(true);
-//        TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
+        TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
         TextFields.bindAutoCompletion(comboBoxMonth.getEditor(), comboBoxMonth.getItems());
 
-        comboBoxTeacher.getSelectionModel().selectFirst();
-
-        comboBoxMonth.getSelectionModel().selectFirst();
+//        comboBoxTeacher.getSelectionModel().selectFirst();
+//
+//        comboBoxMonth.getSelectionModel().selectFirst();
 
     }
 
@@ -156,7 +146,6 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
         doMonthReport(exportTeacherReportSettings, fileName);
 
-        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
     }
 
     private void doMonthReport(Map<String, String> exportTeacherReportSettings, String fileName) {
@@ -178,19 +167,27 @@ public class TeacherMonthReportViewController implements FxInitializable {
             inputFilePath = copiedFile.getAbsolutePath();
         }
 
+        List<Discipline> disciplines = disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getSelectionModel().getSelectedItem());
+        if (disciplines.isEmpty()) {
+            dialogBalloon.warningMessage(LangProperties.ERROR.getValue(), LangProperties.ERROR_EXPORTING_EMPTY_DISCIPLINE.getValue(), null);
+            //Todo exception
+            return;
+        }
+
         monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
-                comboBoxTeacher.getSelectionModel().getSelectedItem().getName(),
-                disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getSelectionModel().getSelectedItem().getName()),
+                comboBoxTeacher.getSelectionModel().getSelectedItem(),
+                disciplines,
                 exportTeacherReportSettings,
                 inputFilePath,
                 outputFilePath);
 
-        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem().getName(), 8, 3);
+        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem(), 8, 3);
 
         if (copiedFile != null && !copiedFile.delete()) {
             log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
 
         }
+        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
     }
 
     @FXML
