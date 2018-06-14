@@ -110,7 +110,10 @@ public enum LangProperties {
     PROCESS("javafx.action.processed"),
     NOT_READY("javafx.action.not.ready"),
     DATA_DISCIPLINE("java.model.discipline.name"),
-    DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete");
+    DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete"),
+    TOTAL_YEAR_SUM("scene.home.menu.master.proof-reading.totalYearSum"),
+    GROUP_TYPE("java.model.group.type"),
+    ADDITIONAL_CONTROL("java.model.discipline.additionalControl");
 
 
     private final String value;

@@ -157,8 +157,8 @@
                     </tooltip>
                 </Button>
                 <Button layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
-                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadData" prefHeight="35.0"
-                        prefWidth="36.0">
+                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#reloadData"
+                        prefHeight="35.0" prefWidth="36.0">
                     <graphic>
                         <FontAwesomeIconView glyphName="REFRESH" size="18"/>
                     </graphic>
