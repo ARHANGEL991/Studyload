@@ -562,7 +562,7 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
     public void saveData() {
         if (!tableView.getItems().isEmpty()) {
 
-            disciplineService.saveAll(tableView.getItems());
+            disciplineService.saveAll(disciplines);
             isEdited = false;
 
             dialogBalloon.succeedSave();
