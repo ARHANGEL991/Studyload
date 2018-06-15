@@ -141,7 +141,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
         exportTeacherReportSettings.put("disciplineArea", "ВедомостьМесяцПреподаватель!A9:AI9");
         exportTeacherReportSettings.put("disciplineAreaEachArea", "A9:AI9");
 
-        String fileName = "TeachersReports" + comboBoxMonth.getValue() + ".xls";
+        String fileName = "ОтчётыПоПреподавателям" + comboBoxMonth.getValue() + ".xls";
 
 
         doMonthReport(exportTeacherReportSettings, fileName);

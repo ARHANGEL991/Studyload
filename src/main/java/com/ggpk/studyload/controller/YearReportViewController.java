@@ -14,14 +14,23 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
+import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Year;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +55,7 @@ public class YearReportViewController implements FxInitializable {
     private Button btnFolderFileTemplate;
 
     @FXML
-    private Spinner<Integer> templateSheetIndexSpinner;
+    private Button btnFolder;
 
     private final UserPreferencesService userPreferencesService;
     private final MessageSource messageSource;
@@ -80,19 +89,30 @@ public class YearReportViewController implements FxInitializable {
     @FXML
     void doReport(ActionEvent event) {
 
+        String fileName = "ГодовойОтчёт.xls";
+        File outputFile = new File(userPreferencesService.getTeacherReportFolderPath(), fileName);
+
         List<Discipline> disciplines = disciplineService.getDisciplinesByTeacherName(comboBoxTeacher.getValue());
         if (disciplines.isEmpty()) {
             dialogBalloon.warningMessage(LangProperties.ERROR.getValue(), LangProperties.ERROR_EXPORTING_EMPTY_DISCIPLINE.getValue(), null);
             //Todo exception
             return;
         }
+        String yearReportTemplateFilePath = userPreferencesService.getYearReportTemplateFilePath();
+        String yearReportPath = outputFile.getAbsolutePath();
+
+
+        if (outputFile.exists() && isWorksheetContainsReports(yearReportPath)) {
+
+            yearReportTemplateFilePath = yearReportPath;
+        }
+
         yearReporterService.createYearStatement(
                 Year.now(),
                 comboBoxTeacher.getValue(),
                 disciplines,
-                templateSheetIndexSpinner.getValue(),
-                userPreferencesService.getYearReportTemplateFilePath(),
-                userPreferencesService.getYearReportTemplateFilePath()
+                yearReportTemplateFilePath,
+                yearReportPath
         );
         dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
 
@@ -108,12 +128,21 @@ public class YearReportViewController implements FxInitializable {
         }
     }
 
+    @FXML
+    void openFolder(ActionEvent event) {
+        final DirectoryChooser directoryChooser = new DirectoryChooser();
+        final File selectedDirectory = directoryChooser.showDialog(homeView.getView().getScene().getWindow());
+        if (selectedDirectory != null) {
+            txtPath.setText(selectedDirectory.getAbsolutePath());
+            userPreferencesService.setYearReportPath(selectedDirectory.getAbsolutePath());
+        }
+    }
+
     public void doClose(ActionEvent event) {
 
     }
 
     public void initialize(URL location, ResourceBundle resources) {
-        templateSheetIndexSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100000, 1));
         txtPath.setText(userPreferencesService.getYearReportTemplateFilePath());
 
 
@@ -121,5 +150,15 @@ public class YearReportViewController implements FxInitializable {
         comboBoxTeacher.setEditable(true);
         TextFields.bindAutoCompletion(comboBoxTeacher.getEditor(), comboBoxTeacher.getItems());
 //        comboBoxTeacher.getSelectionModel().selectFirst();
+    }
+
+    @SneakyThrows
+    private boolean isWorksheetContainsReports(String worksheetPath) {
+        try (InputStream workbookStream = new FileInputStream(new File(worksheetPath))) {
+
+            try (Workbook hssfInputWorkbook = WorkbookFactory.create(workbookStream)) {
+                return hssfInputWorkbook.getNumberOfSheets() > 1;
+            }
+        }
     }
 }

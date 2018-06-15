@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -64,6 +63,7 @@
                             <children>
                                 <Text fx:id="txtPath" layoutX="14.0" layoutY="299.0" strokeType="OUTSIDE"
                                       strokeWidth="0.0" wrappingWidth="749.13671875"/>
+                                <Text fx:id="txtFolderPath" layoutY="299.0" strokeType="OUTSIDE" strokeWidth="0.0"/>
                             </children>
                         </AnchorPane>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -82,29 +82,31 @@
                         <AnchorPane layoutX="20.0" layoutY="324.0" prefHeight="200.0" prefWidth="200.0"
                                     GridPane.rowIndex="2">
                             <children>
-                                <Button fx:id="btnFolderFileTemplate" layoutX="19.0" layoutY="1.0"
-                                        mnemonicParsing="false" onAction="#openFolderFileTemplate" prefHeight="30.0"
-                                        prefWidth="100.0" text="%javafx.action.chooseTemplate"
-                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <Button fx:id="btnOpenFolder" layoutX="19.0" layoutY="1.0" mnemonicParsing="false"
+                                        onAction="#openFolder" prefHeight="30.0" prefWidth="100.0"
+                                        text="%javafx.action.chooseFolder" AnchorPane.bottomAnchor="0.0"
+                                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                        AnchorPane.topAnchor="0.0">
                                     <graphic>
-                                        <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" size="18"/>
+                                        <FontAwesomeIconView glyphName="FOLDER" size="18"/>
                                     </graphic>
                                 </Button>
                             </children>
                         </AnchorPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%java.model.teacher.name"
                               wrappingWidth="115.13671875"/>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4">
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4"/>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
                             <children>
-                                <Spinner fx:id="templateSheetIndexSpinner" layoutX="62.0" layoutY="2.0"
-                                         prefHeight="25.0" prefWidth="155.0"/>
+                                <Button fx:id="btnFolderFileTemplate1" layoutX="77.0" mnemonicParsing="false"
+                                        onAction="#openFolderFileTemplate" prefHeight="35.0" prefWidth="140.0"
+                                        text="%javafx.action.chooseTemplate">
+                                    <graphic>
+                                        <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" size="18"/>
+                                    </graphic>
+                                </Button>
                             </children>
                         </AnchorPane>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4"
-                                    GridPane.rowIndex="2"/>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0"
-                              text="%scene.home.menu.report.year.templateSheetIndex" GridPane.columnIndex="3"/>
                     </children>
                 </GridPane>
             </content>
