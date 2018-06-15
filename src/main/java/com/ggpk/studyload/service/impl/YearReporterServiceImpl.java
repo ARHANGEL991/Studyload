@@ -46,7 +46,6 @@ public class YearReporterServiceImpl implements YearReporterService {
     public void createYearStatement(Year year,
                                     String exportEntityName,
                                     List<Discipline> disciplines,
-                                    int templateSheetIndex,
                                     String inputTemplatePath,
                                     String exportBookPath) {
 
@@ -54,7 +53,19 @@ public class YearReporterServiceImpl implements YearReporterService {
                 discipline -> {
                     List<Discipline> discip = new ArrayList<>();
 
-                    if (discipline.getFullGroup().getAdditionalControl() > 0) {
+                    if (discipline.getFullGroup().getYearDisciplineAccounting() != null) {
+                        Discipline disciplineAdditionalControl = Discipline.builder()
+                                .disciplineType(discipline.getDisciplineType())
+                                .academicYear(discipline.getAcademicYear())
+                                .fullGroup(discipline.getFullGroup())
+                                .group(discipline.getGroup())
+                                .name(discipline.getName())
+                                .build();
+                        discip.add(disciplineAdditionalControl);
+                    }
+
+                    if (discipline.getFullGroup().getYearDisciplineAccounting() != null
+                            && discipline.getFullGroup().getAdditionalControl() > 0) {
                         Discipline disciplineAdditionalControl = Discipline.builder()
                                 .disciplineType(discipline.getDisciplineType())
                                 .academicYear(discipline.getAcademicYear())
@@ -62,6 +73,7 @@ public class YearReporterServiceImpl implements YearReporterService {
                                 .group(discipline.getGroup())
                                 .name(discipline.getName() + " ДК")
                                 .build();
+                        //Fix additional control export
                         discip.add(disciplineAdditionalControl);
                     }
 
@@ -73,20 +85,19 @@ public class YearReporterServiceImpl implements YearReporterService {
         log.info("Running  month export ");
         log.info(MessageFormat.format("Count of entity to export {0}", disciplinesToExport.size()));
 
-        try (InputStream workbookStream = new FileInputStream(new File(inputTemplatePath))) {
-
-            try (HSSFWorkbook hssfInputWorkbook = new HSSFWorkbook(workbookStream)) {
-                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(templateSheetIndex - 1);
-                if (disciplinesToExport.stream()
+        try (InputStream templateStream = new FileInputStream(new File(inputTemplatePath))) {
+            try (HSSFWorkbook hssfInputWorkbook = new HSSFWorkbook(templateStream)) {
+                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet("ГодовойОтчётШаблон")));
+                if (!disciplinesToExport.stream()
                         .filter(discipline ->
                                 discipline.getGroup().getGroupType() == GroupType.BUDGET || discipline.getGroup().getGroupType() == GroupType.PTE)
                         .collect(Collectors.toList()).isEmpty()) {
 
                     doReport(exportEntityName, disciplinesToExport, hssfInputWorkbook, sheet, YearReportType.BUDGET);
-                    sheet = hssfInputWorkbook.cloneSheet(templateSheetIndex - 1);
+                    sheet = hssfInputWorkbook.cloneSheet(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet("ГодовойОтчётШаблон")));
                 }
 
-                if (disciplinesToExport.stream()
+                if (!disciplinesToExport.stream()
                         .filter(discipline ->
                                 discipline.getGroup().getGroupType() == GroupType.COMMERCE)
                         .collect(Collectors.toList()).isEmpty()) {
@@ -95,7 +106,7 @@ public class YearReporterServiceImpl implements YearReporterService {
                 }
 
 
-                try (OutputStream os = new FileOutputStream(inputTemplatePath)) {
+                try (OutputStream os = new FileOutputStream(exportBookPath)) {
                     hssfInputWorkbook.write(os);
                 }
             }
@@ -135,10 +146,10 @@ public class YearReporterServiceImpl implements YearReporterService {
         sheet.getRow(5).createCell(5).setCellValue(exportEntityName);
 
         if (!disciplinesToExport.isEmpty()) {
-            exportGroups(disciplinesToExport, sheet, currentColumn);
-        }
 
-        createTotalColumn(sheet, currentColumn, hssfInputWorkbook);
+            exportGroups(disciplinesToExport, sheet, currentColumn);
+            createTotalColumn(sheet, currentColumn, hssfInputWorkbook);
+        }
     }
 
     private void createTotalColumn(HSSFSheet sheet, AtomicInteger currentCell, HSSFWorkbook workbook) {
@@ -191,8 +202,11 @@ public class YearReporterServiceImpl implements YearReporterService {
                     )
             );
             months.forEach(month -> {
-                if (discipline.getFullGroup().getYearDisciplineAccounting() != null && discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month) > 0) {
+                if (discipline.getFullGroup().getYearDisciplineAccounting() != null && discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month) > 0 && !discipline.getName().contains("ДК")) {
                     getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month));
+                }
+                if (discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl() != null && discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl().getMonthAccountingSum(month) > 0 && discipline.getName().contains("ДК")) {
+                    getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl().getMonthAccountingSum(month));
                 }
                 currentRow[0]++;
             });
@@ -222,7 +236,11 @@ public class YearReporterServiceImpl implements YearReporterService {
             overThePlanCell.setCellFormula(ref);
 
             //DisciplineType
-            getCell(sheet.getRow(currentRow[0]++), currentColumn.get()).setCellValue(discipline.getDisciplineType().getValue());
+            if (discipline.getDisciplineType() != null) {
+                getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getDisciplineType().getValue());
+            }
+            //always go to next line
+            currentRow[0]++;
 
             //GroupType
             getCell(sheet.getRow(currentRow[0]), currentColumn.getAndIncrement()).setCellValue(discipline.getGroup().getGroupType() == GroupType.PTE ? discipline.getGroup().getGroupType().getValue() : "ССО");
