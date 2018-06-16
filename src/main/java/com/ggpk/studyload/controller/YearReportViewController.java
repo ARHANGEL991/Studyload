@@ -6,6 +6,7 @@ import com.ggpk.studyload.service.*;
 import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
+import com.jfoenix.controls.JFXTextField;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -46,7 +47,7 @@ public class YearReportViewController implements FxInitializable {
     private ComboBox<String> comboBoxTeacher;
 
     @FXML
-    private Text txtPath;
+    private JFXTextField txtPath;
 
     @FXML
     private Button btnReport;

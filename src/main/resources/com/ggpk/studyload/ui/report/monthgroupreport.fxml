@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -36,18 +38,21 @@
     <center>
         <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
             <content>
-                <GridPane hgap="10.0" vgap="10.0">
+                <GridPane hgap="10.0" scaleShape="false" vgap="10.0">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="135.0" minWidth="120.0" prefWidth="135.0"/>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="158.0" minWidth="120.0" prefWidth="158.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="154.0" minWidth="50.0" prefWidth="90.0"/>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0"
-                                           prefWidth="128.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="256.0" minWidth="150.0" prefWidth="217.0"/>
+                                           prefWidth="223.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="256.0" minWidth="150.0" prefWidth="222.0"/>
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                        <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="19.0" minHeight="19.0" prefHeight="19.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="168.0" prefHeight="242.0"
+                                        vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES"/>
                         <RowConstraints maxHeight="35.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <padding>
@@ -66,13 +71,7 @@
                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                             </children>
                         </AnchorPane>
-                        <AnchorPane GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-                            <children>
-                                <Text fx:id="txtPath" layoutX="14.0" layoutY="299.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" wrappingWidth="749.13671875"/>
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                             <children>
                                 <Button fx:id="btnReport" defaultButton="true" layoutX="19.0" layoutY="1.0"
                                         mnemonicParsing="false" onAction="#doReport" prefHeight="30.0" prefWidth="100.0"
@@ -86,7 +85,7 @@
                             </children>
                         </AnchorPane>
                         <AnchorPane layoutX="20.0" layoutY="324.0" prefHeight="200.0" prefWidth="200.0"
-                                    GridPane.rowIndex="2">
+                                    GridPane.rowIndex="5">
                             <children>
                                 <Button fx:id="btnFolder" layoutX="19.0" layoutY="1.0" mnemonicParsing="false"
                                         onAction="#openFolder" prefHeight="30.0" prefWidth="100.0"
@@ -100,15 +99,19 @@
                             </children>
                         </AnchorPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%java.model.group.name"
-                              wrappingWidth="115.13671875" GridPane.columnIndex="3"/>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4">
+                              wrappingWidth="115.13671875" GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0"/>
+                            </GridPane.margin>
+                        </Text>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                             <children>
-                                <ComboBox fx:id="comboBoxGroup" prefWidth="150.0" AnchorPane.bottomAnchor="0.0"
-                                          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                          AnchorPane.topAnchor="0.0"/>
+                                <ComboBox fx:id="comboBoxGroup" layoutY="3.0" prefWidth="150.0"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                             </children>
                         </AnchorPane>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="5">
                             <children>
                                 <Button fx:id="btnFolderFileTemplate" layoutX="75.0" layoutY="3.0"
                                         mnemonicParsing="false" onAction="#openFolderFileTemplate" prefHeight="30.0"
@@ -117,6 +120,20 @@
                                         <FontAwesomeIconView glyphName="FILE_EXCEL_ALT" size="18"/>
                                     </graphic>
                                 </Button>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="292.0" prefWidth="455.0" GridPane.columnIndex="2"
+                                    GridPane.columnSpan="2" GridPane.rowSpan="4">
+                            <children>
+                                <JFXTextArea labelFloat="true" prefHeight="240.0" prefWidth="440.0"
+                                             text="Инструкция по созданию  отчёта на группу&#10;1) Выберите xls файл где храниться шаблон месячного отчёта&#10;2) Выберите папку для сохранения&#10;Папку и шаблон требуется выбрать один раз. &#10;Программа запомнит выбор и будет использовать его по умолчанию&#10;3) Выберите группу из выпадающего списка и месяц по которому необходимо сформировать отчёт&#10;4) Нажмите на кнопку &quot;Создать отчёт&quot;. Подждите сообщения о том, что отчёт создан"
+                                             wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0"/>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="4">
+                            <children>
+                                <JFXTextField fx:id="txtPath" editable="false" prefHeight="25.0" prefWidth="752.0"
+                                              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
                             </children>
                         </AnchorPane>
                     </children>
