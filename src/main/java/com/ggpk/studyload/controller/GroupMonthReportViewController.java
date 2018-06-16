@@ -10,6 +10,7 @@ import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
 import com.ggpk.studyload.ui.HomeView;
 import com.ggpk.studyload.ui.report.MonthGroupReportView;
+import com.jfoenix.controls.JFXTextField;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -47,7 +48,7 @@ public class GroupMonthReportViewController implements FxInitializable {
 
 
     @FXML
-    private Text txtPath;
+    private JFXTextField txtPath;
 
     @FXML
     private Button btnReport;
