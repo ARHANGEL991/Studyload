@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @FXMLController
@@ -179,6 +178,9 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
 
     @FXML
     private ToggleGroup termGroup;
+
+    @FXML
+    private Button btnShowHidden;
 
 
     private Month choiseBoxMonthSaved;
@@ -512,6 +514,14 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
         //Fix interface
     }
 
+    public void showHidden() {
+        tableView.getItems().clear();
+        tableView.getItems().addAll(disciplines);
+        btnShowHidden.setVisible(false);
+    }
+
+
+
     @FXML
     public void searchData() {
 
@@ -611,7 +621,10 @@ public class ProofReaderViewController implements FxInitializable, TableDataCont
                 Discipline disciplineFromRow = (Discipline) table.getItems().get(getIndex());
                 setGraphic(tableViewColumnAction.getDefaultHideTableModel());
 
-                tableViewColumnAction.getHideLink().setOnAction((ActionEvent event) -> table.getItems().remove(disciplineFromRow));
+                tableViewColumnAction.getHideLink().setOnAction((ActionEvent event) -> {
+                    table.getItems().remove(disciplineFromRow);
+                    btnShowHidden.setVisible(true);
+                });
             }
         }
     }
