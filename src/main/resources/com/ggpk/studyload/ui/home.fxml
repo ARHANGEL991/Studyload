@@ -56,6 +56,11 @@
                                 <FontAwesomeIconView glyphName="COMMENTS_ALT" size="24"/>
                             </graphic>
                         </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#showHelp" text="%scene.home.menu.help">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="QUESTION" size="24"/>
+                            </graphic>
+                        </MenuItem>
                     </items>
                     <graphic>
                         <FontAwesomeIconView glyphName="INFO" size="24"/>
