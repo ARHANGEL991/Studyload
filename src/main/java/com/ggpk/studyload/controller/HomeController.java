@@ -7,7 +7,11 @@ import com.ggpk.studyload.ui.masterdata.PlanDataView;
 import com.ggpk.studyload.ui.masterdata.ProofReaderView;
 import com.ggpk.studyload.ui.report.MonthGroupReportView;
 import com.ggpk.studyload.ui.report.MonthTeacherReportView;
+import com.ggpk.studyload.ui.report.YearReportView;
+import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing;
 import de.felixroske.jfxsupport.FXMLController;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.NodeOrientation;
@@ -16,14 +20,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @FXMLController
+@Slf4j
 public class HomeController implements FxInitializable {
 
     private final StudyLoadApplication application;
@@ -77,9 +86,18 @@ public class HomeController implements FxInitializable {
 
     private final MonthGroupReportView monthGroupReportView;
 
+    private final YearReportView yearReportView;
 
     @Autowired
-    public HomeController(StudyLoadApplication application, PlanDataView planDataView, PlanViewController planViewController, ProofReaderView proofReaderView, ProofReaderViewController proofReaderViewController, MonthTeacherReportView monthTeacherReportView, ImportView importView, MonthGroupReportView monthGroupReportView) {
+    public HomeController(StudyLoadApplication application,
+                          PlanDataView planDataView,
+                          PlanViewController planViewController,
+                          ProofReaderView proofReaderView,
+                          ProofReaderViewController proofReaderViewController,
+                          MonthTeacherReportView monthTeacherReportView,
+                          ImportView importView,
+                          MonthGroupReportView monthGroupReportView,
+                          YearReportView yearReportView) {
         this.application = application;
         this.planDataView = planDataView;
         this.planViewController = planViewController;
@@ -88,11 +106,18 @@ public class HomeController implements FxInitializable {
         this.monthTeacherReportView = monthTeacherReportView;
         this.importView = importView;
         this.monthGroupReportView = monthGroupReportView;
+        this.yearReportView = yearReportView;
     }
 
     @FXML
     public void doClose(ActionEvent event) {
+        try {
+            Platform.exit();
+        } catch (Exception e) {
+            System.exit(0);
+            log.error("App exit failed", e);
 
+        }
     }
 
     public void initialize(URL location, ResourceBundle resources) {
@@ -139,13 +164,25 @@ public class HomeController implements FxInitializable {
 
     @FXML
     void showReportYearStatement(ActionEvent event) {
-
+        showSceneInMenu(yearReportView.getView());
     }
 
     @FXML
     void showTeacherHours(ActionEvent event) {
         showSceneInMenu(proofReaderView.getView());
-        proofReaderViewController.loadData();
+    }
+
+    @FXML
+    void showHelp(ActionEvent event) {
+        File chm = new File("Help.chm");
+        if (System.getProperty("os.name").toLowerCase().contains("win") && chm.exists()) {
+            String command = "hh.exe" + " \"" + chm.getAbsolutePath() + "\"";
+            try {
+                Runtime.getRuntime().exec(command);
+            } catch (IOException e) {
+                log.error("Error to open Help.chm", e);
+            }
+        }
     }
 
 

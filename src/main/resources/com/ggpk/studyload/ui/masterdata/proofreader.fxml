@@ -22,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="516.0" prefWidth="1435.0"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ggpk.studyload.controller.ProofReaderViewController">
 
@@ -147,8 +147,8 @@
         <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-radius: 5;">
             <items>
                 <Button defaultButton="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                        mnemonicParsing="false" onAction="#newItem" prefHeight="35.0" prefWidth="120.0"
-                        text="%javafx.action.new">
+                        mnemonicParsing="false" onAction="#newItem" prefHeight="35.0" prefWidth="143.0"
+                        text="%javafx.action.new.proofreader">
                     <graphic>
                         <FontAwesomeIconView glyphName="PLUS" size="18"/>
                     </graphic>
@@ -157,8 +157,8 @@
                     </tooltip>
                 </Button>
                 <Button layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
-                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadData" prefHeight="35.0"
-                        prefWidth="36.0">
+                        maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#reloadData"
+                        prefHeight="35.0" prefWidth="104.0" text="%javafx.action.updateAndShowHiden">
                     <graphic>
                         <FontAwesomeIconView glyphName="REFRESH" size="18"/>
                     </graphic>
@@ -206,7 +206,7 @@
                 <RadioButton mnemonicParsing="false" text="%scene.home.menu.master.proof-reading.DK"
                              toggleGroup="$termGroup"/>
                 <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                        onAction="#searchData" prefHeight="35.0" prefWidth="36.0">
+                        onAction="#searchData" prefHeight="35.0" prefWidth="86.0" text="%javafx.action.search">
                     <graphic>
                         <FontAwesomeIconView fontSmoothingType="LCD" glyphName="SEARCH" size="18" strikethrough="true"/>
                     </graphic>
@@ -214,6 +214,8 @@
                         <Insets/>
                     </opaqueInsets>
                 </Button>
+                <Button fx:id="btnShowHidden" mnemonicParsing="false" onAction="#showHidden" prefHeight="35.0"
+                        text="%javafx.menu.showHidden" visible="false"/>
             </items>
         </ToolBar>
     </bottom>

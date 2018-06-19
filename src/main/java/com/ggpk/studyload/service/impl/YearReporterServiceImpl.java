@@ -26,12 +26,26 @@ import static java.lang.String.valueOf;
 @Slf4j
 public class YearReporterServiceImpl implements YearReporterService {
 
+    public enum YearReportType {
+        BUDGET(" Б"),
+        COMMERCE(" К");
 
+        private String value;
+
+        YearReportType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    //TODO REFACTOR ALL!! LAST WEEK DIPLOMA
     @SneakyThrows
     public void createYearStatement(Year year,
                                     String exportEntityName,
                                     List<Discipline> disciplines,
-                                    Map<String, String> exportBookSettings,
                                     String inputTemplatePath,
                                     String exportBookPath) {
 
@@ -39,7 +53,19 @@ public class YearReporterServiceImpl implements YearReporterService {
                 discipline -> {
                     List<Discipline> discip = new ArrayList<>();
 
-                    if (discipline.getFullGroup().getAdditionalControl() > 0) {
+                    if (discipline.getFullGroup().getYearDisciplineAccounting() != null) {
+                        Discipline disciplineAdditionalControl = Discipline.builder()
+                                .disciplineType(discipline.getDisciplineType())
+                                .academicYear(discipline.getAcademicYear())
+                                .fullGroup(discipline.getFullGroup())
+                                .group(discipline.getGroup())
+                                .name(discipline.getName())
+                                .build();
+                        discip.add(disciplineAdditionalControl);
+                    }
+
+                    if (discipline.getFullGroup().getYearDisciplineAccounting() != null
+                            && discipline.getFullGroup().getAdditionalControl() > 0) {
                         Discipline disciplineAdditionalControl = Discipline.builder()
                                 .disciplineType(discipline.getDisciplineType())
                                 .academicYear(discipline.getAcademicYear())
@@ -47,6 +73,7 @@ public class YearReporterServiceImpl implements YearReporterService {
                                 .group(discipline.getGroup())
                                 .name(discipline.getName() + " ДК")
                                 .build();
+                        //Fix additional control export
                         discip.add(disciplineAdditionalControl);
                     }
 
@@ -58,40 +85,70 @@ public class YearReporterServiceImpl implements YearReporterService {
         log.info("Running  month export ");
         log.info(MessageFormat.format("Count of entity to export {0}", disciplinesToExport.size()));
 
-        try (InputStream workbookStream = new FileInputStream(new File(inputTemplatePath))) {
+        try (InputStream templateStream = new FileInputStream(new File(inputTemplatePath))) {
+            try (HSSFWorkbook hssfInputWorkbook = new HSSFWorkbook(templateStream)) {
+                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet("ГодовойОтчётШаблон")));
+                if (!disciplinesToExport.stream()
+                        .filter(discipline ->
+                                discipline.getGroup().getGroupType() == GroupType.BUDGET || discipline.getGroup().getGroupType() == GroupType.PTE)
+                        .collect(Collectors.toList()).isEmpty()) {
 
-            try (HSSFWorkbook hssfInputWorkbook = new HSSFWorkbook(workbookStream)) {
-                HSSFSheet sheet = hssfInputWorkbook.cloneSheet(1);
-
-                if (hssfInputWorkbook.getSheet(exportEntityName) != null) {
-                    hssfInputWorkbook.removeSheetAt(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet(exportEntityName)));
+                    doReport(exportEntityName, disciplinesToExport, hssfInputWorkbook, sheet, YearReportType.BUDGET);
+                    sheet = hssfInputWorkbook.cloneSheet(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet("ГодовойОтчётШаблон")));
                 }
 
-                hssfInputWorkbook.setSheetName(hssfInputWorkbook.getSheetIndex(sheet), exportEntityName);
+                if (!disciplinesToExport.stream()
+                        .filter(discipline ->
+                                discipline.getGroup().getGroupType() == GroupType.COMMERCE)
+                        .collect(Collectors.toList()).isEmpty()) {
 
-                HSSFCellStyle cellStyle = hssfInputWorkbook.createCellStyle();
-                Font font = cellStyle.getFont(hssfInputWorkbook);
-
-                font.setFontHeightInPoints((short) 10);
-                font.setBold(true);
-
-                cellStyle.setFont(font);
-
-                AtomicInteger currentColumn = new AtomicInteger(2);
-
-                sheet.getRow(5).createCell(5).setCellValue(exportEntityName);
-
-                if (!disciplinesToExport.isEmpty()) {
-                    exportGroups(disciplinesToExport, sheet, currentColumn);
+                    doReport(exportEntityName, disciplinesToExport, hssfInputWorkbook, sheet, YearReportType.COMMERCE);
                 }
 
-                createTotalColumn(sheet, currentColumn, hssfInputWorkbook);
 
-
-                try (OutputStream os = new FileOutputStream(inputTemplatePath)) {
+                try (OutputStream os = new FileOutputStream(exportBookPath)) {
                     hssfInputWorkbook.write(os);
                 }
             }
+        }
+    }
+
+    private void doReport(String exportEntityName, List<Discipline> disciplinesToExport, HSSFWorkbook hssfInputWorkbook, HSSFSheet sheet, YearReportType type) {
+        if (hssfInputWorkbook.getSheet(exportEntityName + type.getValue()) != null) {
+            hssfInputWorkbook.removeSheetAt(hssfInputWorkbook.getSheetIndex(hssfInputWorkbook.getSheet(exportEntityName + type.getValue())));
+        }
+
+        hssfInputWorkbook.setSheetName(hssfInputWorkbook.getSheetIndex(sheet), exportEntityName + type.getValue());
+
+        if (type == YearReportType.BUDGET) {
+            getCell(sheet.getRow(3), 0).setCellValue("в бюджетных группах");
+            disciplinesToExport = disciplinesToExport.stream()
+                    .filter(discipline ->
+                            discipline.getGroup().getGroupType() == GroupType.BUDGET || discipline.getGroup().getGroupType() == GroupType.PTE)
+                    .collect(Collectors.toList());
+        } else {
+            getCell(sheet.getRow(3), 0).setCellValue("в платных группах");
+            disciplinesToExport = disciplinesToExport.stream()
+                    .filter(discipline ->
+                            discipline.getGroup().getGroupType() == GroupType.COMMERCE)
+                    .collect(Collectors.toList());
+        }
+        HSSFCellStyle cellStyle = hssfInputWorkbook.createCellStyle();
+        Font font = cellStyle.getFont(hssfInputWorkbook);
+
+        font.setFontHeightInPoints((short) 10);
+        font.setBold(true);
+
+        cellStyle.setFont(font);
+
+        AtomicInteger currentColumn = new AtomicInteger(2);
+
+        sheet.getRow(5).createCell(5).setCellValue(exportEntityName);
+
+        if (!disciplinesToExport.isEmpty()) {
+
+            exportGroups(disciplinesToExport, sheet, currentColumn);
+            createTotalColumn(sheet, currentColumn, hssfInputWorkbook);
         }
     }
 
@@ -114,7 +171,7 @@ public class YearReporterServiceImpl implements YearReporterService {
             HSSFRow row = sheet.getRow(currentRow);
 
             String ref = "C" + valueOf(currentRow + 1) + ":" + (char) ('A' + currentCell.get() - 1) + valueOf(currentRow + 1);
-            log.info("Total cell {} ", ref);
+            log.debug("Total cell {} ", ref);
             HSSFCell totalCell = getCell(row, currentCell.get());
             totalCell.setCellType(CellType.FORMULA);
             totalCell.setCellFormula("SUM(" + ref + ")");
@@ -145,8 +202,11 @@ public class YearReporterServiceImpl implements YearReporterService {
                     )
             );
             months.forEach(month -> {
-                if (discipline.getFullGroup().getYearDisciplineAccounting() != null && discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month) > 0) {
+                if (discipline.getFullGroup().getYearDisciplineAccounting() != null && discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month) > 0 && !discipline.getName().contains("ДК")) {
                     getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getFullGroup().getYearDisciplineAccounting().getMonthAccountingSum(month));
+                }
+                if (discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl() != null && discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl().getMonthAccountingSum(month) > 0 && discipline.getName().contains("ДК")) {
+                    getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getFullGroup().getYearDisciplineAccountingAdditionalControl().getMonthAccountingSum(month));
                 }
                 currentRow[0]++;
             });
@@ -156,27 +216,31 @@ public class YearReporterServiceImpl implements YearReporterService {
             HSSFCell sumCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             sumCell.setCellType(CellType.FORMULA);
             String ref = (char) ('A' + currentColumn.get()) + "10:" + (char) ('A' + currentColumn.get()) + "20";
-            log.info("Sum {} ", ref);
+            log.debug("Sum {} ", ref);
             sumCell.setCellFormula("SUM(" + ref + ")");
 
             //Planed
             getCell(sheet.getRow(currentRow[0]++), currentColumn.get()).setCellValue(discipline.getFullGroup().getTotalSum());
             //Not done
             ref = (char) ('A' + currentColumn.get()) + "21 - " + (char) ('A' + currentColumn.get()) + "20";
-            log.info("Not done {} ", ref);
+            log.debug("Not done {} ", ref);
             HSSFCell notDoneCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             notDoneCell.setCellType(CellType.FORMULA);
             notDoneCell.setCellFormula(ref);
 
             //Over the plan
             ref = (char) ('A' + currentColumn.get()) + "20 - " + (char) ('A' + currentColumn.get()) + "21";
-            log.info("Over the plan {} ", ref);
+            log.debug("Over the plan {} ", ref);
             HSSFCell overThePlanCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             overThePlanCell.setCellType(CellType.FORMULA);
             overThePlanCell.setCellFormula(ref);
 
             //DisciplineType
-            getCell(sheet.getRow(currentRow[0]++), currentColumn.get()).setCellValue(discipline.getDisciplineType().getValue());
+            if (discipline.getDisciplineType() != null) {
+                getCell(sheet.getRow(currentRow[0]), currentColumn.get()).setCellValue(discipline.getDisciplineType().getValue());
+            }
+            //always go to next line
+            currentRow[0]++;
 
             //GroupType
             getCell(sheet.getRow(currentRow[0]), currentColumn.getAndIncrement()).setCellValue(discipline.getGroup().getGroupType() == GroupType.PTE ? discipline.getGroup().getGroupType().getValue() : "ССО");

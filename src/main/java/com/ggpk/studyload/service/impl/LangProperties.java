@@ -37,6 +37,8 @@ public enum LangProperties {
     IMPORT("scene.home.menu.import"),
     EXPORTING("javafx.action.exporting"),
     VIEW("javafx.action.view"),
+    ERROR("javafx.notification.error"),
+    ERROR_EXPORTING_EMPTY_DISCIPLINE("javafx.notification.error.export.emptyDisciplines"),
     START_IMPORT("javafx.notification.start.import"),
     START_EXPORT("javafx.notification.start.export"),
     ERROR_LOADING_WITH_PARAM("javafx.notification.error.loading"),
@@ -108,7 +110,10 @@ public enum LangProperties {
     PROCESS("javafx.action.processed"),
     NOT_READY("javafx.action.not.ready"),
     DATA_DISCIPLINE("java.model.discipline.name"),
-    DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete");
+    DATA_DISCIPLINE_DELETE("java.model.discipline.name.delete"),
+    TOTAL_YEAR_SUM("scene.home.menu.master.proof-reading.totalYearSum"),
+    GROUP_TYPE("java.model.group.type"),
+    ADDITIONAL_CONTROL("java.model.discipline.additionalControl");
 
 
     private final String value;
