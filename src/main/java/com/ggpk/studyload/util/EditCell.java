@@ -2,6 +2,7 @@ package com.ggpk.studyload.util;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -61,28 +62,28 @@ public class EditCell<S, T> extends TextFieldTableCell<S, T> {
     /**
      * {@inheritDoc}
      */
-//    @Override
-//    public void commitEdit(T newValue) {
-//        if (!isEditing())
-//            return;
-//        final TableView<S> table = getTableView();
-//        if (table != null) {
-//            // Inform the TableView of the edit being ready to be committed.
-//            TableColumn.CellEditEvent editEvent = new TableColumn.CellEditEvent(table, tablePos,
-//                    TableColumn.editCommitEvent(), newValue);
-//
-//            Event.fireEvent(getTableColumn(), editEvent);
-//        }
-//        // we need to setEditing(false):
-//        super.cancelEdit(); // this fires an invalid EditCancelEvent.
-//        // update the item within this cell, so that it represents the new value
-//        updateItem(newValue, false);
-//        isEdited=true;
-//        if (table != null) {
-//            // reset the editing cell on the TableView
-//            table.edit(-1, null);
-//        }
-//    }
+    @Override
+    public void commitEdit(T newValue) {
+        if (!isEditing())
+            return;
+        final TableView<S> table = getTableView();
+        if (table != null) {
+            // Inform the TableView of the edit being ready to be committed.
+            TableColumn.CellEditEvent editEvent = new TableColumn.CellEditEvent(table, tablePos,
+                    TableColumn.editCommitEvent(), newValue);
+
+            Event.fireEvent(getTableColumn(), editEvent);
+        }
+        // we need to setEditing(false):
+        super.cancelEdit(); // this fires an invalid EditCancelEvent.
+        // update the item within this cell, so that it represents the new value
+        updateItem(newValue, false);
+        isEdited = true;
+        if (table != null) {
+            // reset the editing cell on the TableView
+            table.edit(-1, null);
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -98,7 +99,8 @@ public class EditCell<S, T> extends TextFieldTableCell<S, T> {
             // we interpret it as commit.
             String newText = textField.getText();
             // commit the new text to the model
-            this.commitEdit(getConverter().fromString(newText));
+//            this.commitEdit(getConverter().fromString(newText));
+            commitEdit(getConverter().fromString(newText));
         }
         setGraphic(null); // stop editing with TextField
     }
@@ -122,19 +124,15 @@ public class EditCell<S, T> extends TextFieldTableCell<S, T> {
             if (getConverter() == null) {
                 throw new IllegalStateException("StringConverter is null.");
             }
-            this.commitEdit(getConverter().fromString(textField.getText()));
+            commitEdit(getConverter().fromString(textField.getText()));
             event.consume();
         });
 
-        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable,
-                                Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    commitEdit(getConverter().fromString(textField.getText()));
-                }
-
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                commitEdit(getConverter().fromString(textField.getText()));
             }
+
         });
 
         textField.setOnKeyPressed(t -> {
