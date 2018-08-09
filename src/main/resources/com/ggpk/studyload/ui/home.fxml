@@ -44,11 +44,6 @@
                         <FontAwesomeIconView glyphName="FILE_ALT" size="24"/>
                     </graphic>
                 </Menu>
-                <Menu fx:id="menuSettings" mnemonicParsing="false" text="%scene.home.menu.setting">
-                    <graphic>
-                        <FontAwesomeIconView glyphName="GEAR" size="24"/>
-                    </graphic>
-                </Menu>
                 <Menu mnemonicParsing="false" text="%scene.home.menu.help">
                     <items>
                         <MenuItem mnemonicParsing="false" text="%scene.home.menu.help.contact">
