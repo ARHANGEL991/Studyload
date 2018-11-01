@@ -19,4 +19,6 @@ public interface DisciplineService extends IRepository<Discipline, Long> {
     List<Discipline> getDisciplinesByTeacherName(String teacherName);
 
     List<Discipline> getDisciplinesByTeacherNameLike(String teacherName);
+
+    List<String> getAllDisciplineNames();
 }

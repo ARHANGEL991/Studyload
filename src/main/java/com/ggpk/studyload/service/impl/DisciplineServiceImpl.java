@@ -84,4 +84,8 @@ public class DisciplineServiceImpl implements DisciplineService {
     public List<Discipline> getDisciplinesByTeacherNameLike(String teacherName) {
         return repository.findByFullGroupTeacherNameLike("%" + teacherName + "%");
     }
+
+    public List<String> getAllDisciplineNames() {
+        return repository.getAllDisciplineNames();
+    }
 }

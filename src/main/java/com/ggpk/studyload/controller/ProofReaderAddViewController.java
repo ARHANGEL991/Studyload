@@ -11,18 +11,22 @@ import com.ggpk.studyload.service.ui.notifications.ValidatorMessages;
 import com.ggpk.studyload.ui.event.ShowViewEvent;
 import com.ggpk.studyload.ui.masterdata.ProofReaderAddView;
 import com.ggpk.studyload.ui.masterdata.ProofReaderView;
+import com.ggpk.studyload.util.ComboBoxAutoComplete;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.controlsfx.validation.*;
+import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 
 @FXMLController
@@ -33,7 +37,7 @@ public class ProofReaderAddViewController implements FxInitializable {
     private TextField txtDisciplineName;
 
     @FXML
-    private ChoiceBox<Group> choiseGroupName;
+    private ComboBox<Group> choiseGroupName;
 
     @FXML
     private ComboBox<Teacher> choiseTeacherName;
@@ -85,10 +89,6 @@ public class ProofReaderAddViewController implements FxInitializable {
     private final MessageSource messageSource;
 
     private final DialogBalloon dialogBalloon;
-
-
-
-
 
 
     @Autowired
@@ -172,6 +172,11 @@ public class ProofReaderAddViewController implements FxInitializable {
         spinnerWeeksInTerm.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100000, 0));
         spinnerTotalHoursWithRemoval.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100000, 0));
         spinnerAdditionalControl.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100000, 0));
+        ComboBoxAutoComplete.AutoCompleteComparator<Teacher> teacherComparator = (typedText, objectToCompare) -> objectToCompare.getName().toLowerCase().contains(typedText);
+        ComboBoxAutoComplete.AutoCompleteComparator<Group> groupComparator = (typedText, objectToCompare) -> objectToCompare.getName().toLowerCase().contains(typedText);
+        new ComboBoxAutoComplete<>(choiseTeacherName, teacherComparator);
+        new ComboBoxAutoComplete<>(choiseGroupName, groupComparator);
+        TextFields.bindAutoCompletion(txtDisciplineName, new ArrayList<>(new HashSet<>(disciplineService.getAllDisciplineNames())));
 //        messageSource.getMessage(LangProperties.LEVEL.getValue(),Locale.c);
     }
 
