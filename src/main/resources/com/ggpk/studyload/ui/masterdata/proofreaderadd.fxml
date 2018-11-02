@@ -106,10 +106,10 @@
                                 <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
                                             GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
                                     <children>
-                                        <ChoiceBox fx:id="choiseGroupName" layoutY="2.0" prefHeight="30.0"
-                                                   prefWidth="280.0" AnchorPane.bottomAnchor="0.0"
-                                                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                                   AnchorPane.topAnchor="0.0"/>
+                                        <ComboBox fx:id="choiseGroupName" layoutY="2.0" prefHeight="30.0"
+                                                  prefWidth="280.0" AnchorPane.bottomAnchor="0.0"
+                                                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                                  AnchorPane.topAnchor="0.0"/>
                                     </children>
                                 </AnchorPane>
                                 <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
