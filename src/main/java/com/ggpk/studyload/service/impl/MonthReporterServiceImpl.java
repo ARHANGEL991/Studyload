@@ -163,9 +163,15 @@ public class MonthReporterServiceImpl implements MonthReporterService {
 
                     for (int i = 0; i < 31; i++) { //if 0 cell
                         Cell cell = CellUtil.getCell(row, startColumn + i);
+
+
                         if (cell.getNumericCellValue() == 0) {
+                            if (cell.getCellTypeEnum() == CellType.FORMULA) {
+                                continue;
+                            }
                             cell.setCellValue((String) null);
                         }
+
 
                     }
                 }
