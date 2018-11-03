@@ -56,7 +56,7 @@ public class MonthReporterServiceImpl implements MonthReporterService {
                                      List<Discipline> groupDisciplines,
                                      Map<String, String> exportBookSettings,
                                      String inputTemplatePath,
-                                     String exportBookPath) {
+                                     String exportBookPath) throws FileNotFoundException {
 
         /*
          Convert to export entity

@@ -8,6 +8,7 @@ import com.ggpk.studyload.service.TeacherService;
 import com.ggpk.studyload.service.UserPreferencesService;
 import com.ggpk.studyload.service.impl.LangProperties;
 import com.ggpk.studyload.service.ui.notifications.DialogBalloon;
+import com.ggpk.studyload.service.ui.notifications.DialogWindow;
 import com.ggpk.studyload.ui.HomeView;
 import com.ggpk.studyload.ui.report.MonthTeacherReportView;
 import com.jfoenix.controls.JFXTextField;
@@ -16,10 +17,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.util.StringConverter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,10 +27,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -40,8 +36,6 @@ import java.time.Month;
 import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.ggpk.studyload.controller.GroupMonthReportViewController.toSingleton;
 
 @FXMLController
 @Slf4j
@@ -71,16 +65,21 @@ public class TeacherMonthReportViewController implements FxInitializable {
 
     private final UserPreferencesService userPreferencesService;
     private final DialogBalloon dialogBalloon;
+    private final DialogWindow dialogWindow;
 
     private final MonthTeacherReportView monthTeacherReportView;
 
 
-
-
-
-
     @Autowired
-    public TeacherMonthReportViewController(MessageSource messageSource, MonthReporterService monthReporterService, TeacherService teacherService, UserPreferencesService userPreferencesService, HomeView homeView, DisciplineService disciplineService, DialogBalloon dialogBalloon, MonthTeacherReportView monthTeacherReportView) {
+    public TeacherMonthReportViewController(MessageSource messageSource,
+                                            MonthReporterService monthReporterService,
+                                            TeacherService teacherService,
+                                            UserPreferencesService userPreferencesService,
+                                            HomeView homeView,
+                                            DisciplineService disciplineService,
+                                            DialogBalloon dialogBalloon,
+                                            MonthTeacherReportView monthTeacherReportView,
+                                            DialogWindow dialogWindow) {
         this.messageSource = messageSource;
         this.monthReporterService = monthReporterService;
         this.teacherService = teacherService;
@@ -89,6 +88,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
         this.homeView = homeView;
         this.disciplineService = disciplineService;
         this.dialogBalloon = dialogBalloon;
+        this.dialogWindow = dialogWindow;
         this.monthTeacherReportView = monthTeacherReportView;
     }
 
@@ -138,7 +138,7 @@ public class TeacherMonthReportViewController implements FxInitializable {
     void doReport(ActionEvent event) {
 
         Map<String, String> exportTeacherReportSettings = new HashMap<>();
-        exportTeacherReportSettings.put("xlsArea", "ВедомостьМесяцПреподаватель!A1:AI10");
+        exportTeacherReportSettings.put("xlsArea", "ВедомостьМесяцПреподаватель!A1:AI20");
         exportTeacherReportSettings.put("disciplineArea", "ВедомостьМесяцПреподаватель!A9:AI9");
         exportTeacherReportSettings.put("disciplineAreaEachArea", "A9:AI9");
 
@@ -150,6 +150,8 @@ public class TeacherMonthReportViewController implements FxInitializable {
     }
 
     private void doMonthReport(Map<String, String> exportTeacherReportSettings, String fileName) {
+        boolean isHaveError = false;
+
         File outputFile = new File(userPreferencesService.getTeacherReportFolderPath(), fileName);
 
         File copiedFile = null;
@@ -174,21 +176,29 @@ public class TeacherMonthReportViewController implements FxInitializable {
             //Todo exception
             return;
         }
+        try {
+            monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
+                    comboBoxTeacher.getSelectionModel().getSelectedItem(),
+                    disciplines,
+                    exportTeacherReportSettings,
+                    inputFilePath,
+                    outputFilePath);
 
-        monthReporterService.createMonthStatement(Month.of(comboBoxMonth.getItems().indexOf(comboBoxMonth.getValue()) + 1), Year.now(),
-                comboBoxTeacher.getSelectionModel().getSelectedItem(),
-                disciplines,
-                exportTeacherReportSettings,
-                inputFilePath,
-                outputFilePath);
+            monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem(), 8, 3);
 
-        monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem(), 8, 3);
+        } catch (FileNotFoundException e) {
+            isHaveError = true;
+            dialogWindow.errorReportCreate(LangProperties.ERROR_FILE_IS_OPENED.getValue(), e);
 
-        if (copiedFile != null && !copiedFile.delete()) {
-            log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
-
+        } finally {
+            if (copiedFile != null && !copiedFile.delete()) {
+                log.error(MessageFormat.format("File {0} is delete", copiedFile.getPath()));
+            }
         }
-        dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
+
+        if (!isHaveError) {
+            dialogBalloon.succeed(LangProperties.SUCESSED_EXPORTED.getValue());
+        }
     }
 
     @FXML

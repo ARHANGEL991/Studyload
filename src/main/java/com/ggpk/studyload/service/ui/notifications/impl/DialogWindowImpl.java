@@ -89,10 +89,10 @@ public class DialogWindowImpl implements DialogWindow {
     }
 
     /**
-     * @param removableEntityName              {scene.xxx.text} from /lang/language_ru_RU.properties
-     * @param value              value selected
-     * @param propertyColumnName {scene.xxx.placeholder.xxx.id} from /lang/language_ru_RU.properties
-     * @param id                 get value
+     * @param removableEntityName {scene.xxx.text} from /lang/language_ru_RU.properties
+     * @param value               value selected
+     * @param propertyColumnName  {scene.xxx.placeholder.xxx.id} from /lang/language_ru_RU.properties
+     * @param id                  get value
      * @return
      */
     public Optional<ButtonType> confirmDelete(String removableEntityName, Object value, String propertyColumnName, Object id) {
@@ -108,9 +108,9 @@ public class DialogWindowImpl implements DialogWindow {
     }
 
     /**
-     * @param emptyList tableView, listView, comboBox
-     * @param getItems  get items method
-     * @param loadEntityName     form {scene.xxx.text}  /lang/language_ru_RU.properties
+     * @param emptyList      tableView, listView, comboBox
+     * @param getItems       get items method
+     * @param loadEntityName form {scene.xxx.text}  /lang/language_ru_RU.properties
      */
     public void loading(List emptyList, Supplier<List> getItems, String loadEntityName) {
         setTitle(messageSource.getMessage(LangProperties.LOADING.getValue(), null, Locale.getDefault()));
@@ -202,11 +202,9 @@ public class DialogWindowImpl implements DialogWindow {
         showError(ex);
     }
 
-    public void errorPrint(String title, Throwable ex) {
-        setTitle(messageSource.getMessage(title, null, Locale.getDefault()));
-        setHeader(messageSource.getMessage(LangProperties.ERROR_PRINT_WITH_PARAM.getValue(), new Object[]{
-                getTitle()
-        }, Locale.getDefault()));
+    public void errorReportCreate(String title, Throwable ex) {
+        setTitle(messageSource.getMessage(LangProperties.ERROR_CREATE_REPORT_WITH_PARAM.getValue(), null, Locale.getDefault()));
+        setHeader(messageSource.getMessage(title, null, Locale.getDefault()));
         setMessage(ex.getMessage());
         showError(ex);
     }

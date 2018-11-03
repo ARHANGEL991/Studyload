@@ -28,7 +28,7 @@ public interface DialogWindow {
 
     void errorUpdate(String title, String columnProperty, Object key, Throwable ex);
 
-    void errorPrint(String title, Throwable ex);
+    void errorReportCreate(String title, Throwable ex);
 
     void loading(Task aTask);
 

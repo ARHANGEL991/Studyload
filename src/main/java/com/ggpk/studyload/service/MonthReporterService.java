@@ -3,6 +3,7 @@ package com.ggpk.studyload.service;
 
 import com.ggpk.studyload.model.Discipline;
 
+import java.io.FileNotFoundException;
 import java.time.Month;
 import java.time.Year;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface MonthReporterService {
                               List<Discipline> groupDisciplines,
                               Map<String, String> exportBookSettings,
                               String inputTemplatePath,
-                              String exportBookPath);
+                              String exportBookPath) throws FileNotFoundException;
 
     void clearAllZeroCell(String workbookPathname, String sheetName, int startRow, int startColumn);
 
