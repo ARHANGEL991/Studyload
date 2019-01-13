@@ -6,8 +6,10 @@ import com.ggpk.studyload.service.MonthReporterService;
 import com.ggpk.studyload.util.MonthsRu;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
 import org.jxls.area.XlsArea;
 import org.jxls.command.EachCommand;
@@ -158,7 +160,8 @@ public class MonthReporterServiceImpl implements MonthReporterService {
                     row.setRowStyle(style);
                     row.setHeight((short) -1);
                     if (row.getCell(2) != null) {
-                        row.getCell(2).setCellStyle(style);
+                        CellStyle cellStyle = row.getCell(2).getCellStyle();
+                        cellStyle.setWrapText(true);
                     }
 
                     for (int i = 0; i < 31; i++) { //if 0 cell
@@ -175,6 +178,46 @@ public class MonthReporterServiceImpl implements MonthReporterService {
 
                     }
                 }
+                try (OutputStream os = new FileOutputStream(workbookPathname)) {
+                    hssfInputWorkbook.write(os);
+                }
+            }
+        }
+    }
+
+    @SneakyThrows({IOException.class, InvalidFormatException.class})
+    public void setConditionFormationOnCells(String workbookPathname, String sheetName, int startRow, int startColumn, int cellsCount) {
+        try (InputStream workbookStream = new FileInputStream(new File(workbookPathname))) {
+
+            try (Workbook hssfInputWorkbook = WorkbookFactory.create(workbookStream)) {
+                Sheet sheet = hssfInputWorkbook.getSheet(sheetName);
+
+
+                // Define a Conditional Formatting rule, which triggers formatting
+                // when cell's value is greater or equal than 100.0 and
+                // applies patternFormatting defined below.
+                SheetConditionalFormatting sheetConditionalFormatting = sheet.getSheetConditionalFormatting();
+                ConditionalFormattingRule rule = sheetConditionalFormatting.createConditionalFormattingRule(
+                        ComparisonOperator.GE,
+                        "9.0", // 1st formula
+                        null     // 2nd formula is not used for comparison operator GE
+                );
+
+                // Create pattern with red background
+                PatternFormatting patternFormatting = rule.createPatternFormatting();
+                patternFormatting.setFillBackgroundColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+
+                // Apply Conditional Formatting rule defined above to the regions
+                CellRangeAddress[] cellRangeAddress = new CellRangeAddress[]{
+                        new CellRangeAddress(startRow, startRow, startColumn, startColumn + cellsCount)
+                };
+                sheetConditionalFormatting.addConditionalFormatting(cellRangeAddress, rule);
+
+                sheet.setAutobreaks(false);
+                log.info("Breaks rows on line {} ", sheet.getLastRowNum());
+                sheet.setRowBreak(sheet.getLastRowNum());
+                sheet.setColumnBreak(startColumn + cellsCount);
+
                 try (OutputStream os = new FileOutputStream(workbookPathname)) {
                     hssfInputWorkbook.write(os);
                 }

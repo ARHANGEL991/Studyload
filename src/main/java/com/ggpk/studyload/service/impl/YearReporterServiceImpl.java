@@ -222,14 +222,14 @@ public class YearReporterServiceImpl implements YearReporterService {
             //Planed
             getCell(sheet.getRow(currentRow[0]++), currentColumn.get()).setCellValue(discipline.getFullGroup().getTotalSum());
             //Not done
-            ref = (char) ('A' + currentColumn.get()) + "21 - " + (char) ('A' + currentColumn.get()) + "20";
+            ref = (char) ('A' + currentColumn.get()) + "22 - " + (char) ('A' + currentColumn.get()) + "21";
             log.debug("Not done {} ", ref);
             HSSFCell notDoneCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             notDoneCell.setCellType(CellType.FORMULA);
             notDoneCell.setCellFormula(ref);
 
             //Over the plan
-            ref = (char) ('A' + currentColumn.get()) + "20 - " + (char) ('A' + currentColumn.get()) + "21";
+            ref = (char) ('A' + currentColumn.get()) + "21 - " + (char) ('A' + currentColumn.get()) + "22";
             log.debug("Over the plan {} ", ref);
             HSSFCell overThePlanCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             overThePlanCell.setCellType(CellType.FORMULA);

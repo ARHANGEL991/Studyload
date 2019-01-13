@@ -185,6 +185,8 @@ public class TeacherMonthReportViewController implements FxInitializable {
                     outputFilePath);
 
             monthReporterService.clearAllZeroCell(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem(), 8, 3);
+            monthReporterService.setConditionFormationOnCells(outputFilePath, comboBoxTeacher.getSelectionModel().getSelectedItem(), disciplines.size() - 1 + 8, 3, 30);
+
 
         } catch (FileNotFoundException e) {
             isHaveError = true;

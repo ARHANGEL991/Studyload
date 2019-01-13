@@ -188,6 +188,7 @@ public class GroupMonthReportViewController implements FxInitializable {
                     inputFilePath,
                     outputFilePath);
             monthReporterService.clearAllZeroCell(outputFilePath, comboBoxGroup.getSelectionModel().getSelectedItem(), 8, 4);
+            monthReporterService.setConditionFormationOnCells(outputFilePath, comboBoxGroup.getSelectionModel().getSelectedItem(), disciplines.size() - 1 + 8, 4, 30);
 
         } catch (FileNotFoundException e) {
             isHaveError = true;

@@ -20,4 +20,5 @@ public interface MonthReporterService {
 
     void clearAllZeroCell(String workbookPathname, String sheetName, int startRow, int startColumn);
 
+    void setConditionFormationOnCells(String workbookPathname, String sheetName, int startRow, int startColumn, int cellsCount);
 }
