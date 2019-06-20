@@ -5,7 +5,7 @@
 
     <groupId>com.ggpk</groupId>
     <artifactId>studyload</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.18</version>
     <packaging>jar</packaging>
 
     <name>studyload</name>
