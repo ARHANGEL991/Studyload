@@ -6,7 +6,6 @@ import com.ggpk.studyload.service.YearReporterService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -170,7 +169,7 @@ public class YearReporterServiceImpl implements YearReporterService {
         for (int currentRow = 9; currentRow < 24; currentRow++) {
             HSSFRow row = sheet.getRow(currentRow);
 
-            String ref = "C" + valueOf(currentRow + 1) + ":" + (char) ('A' + currentCell.get() - 1) + valueOf(currentRow + 1);
+            String ref = "C" + valueOf(currentRow + 1) + ":" + this.buildCellRef(currentRow - 1) + valueOf(currentRow + 1);
             log.debug("Total cell {} ", ref);
             HSSFCell totalCell = getCell(row, currentCell.get());
             totalCell.setCellType(CellType.FORMULA);
@@ -215,21 +214,21 @@ public class YearReporterServiceImpl implements YearReporterService {
             //Sum
             HSSFCell sumCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             sumCell.setCellType(CellType.FORMULA);
-            String ref = (char) ('A' + currentColumn.get()) + "10:" + (char) ('A' + currentColumn.get()) + "20";
-            log.debug("Sum {} ", ref);
+            String ref = this.buildCellRef(currentColumn.get()) + "10:" + this.buildCellRef(currentColumn.get()) + "20";
+            log.info("Sum {} ", ref);
             sumCell.setCellFormula("SUM(" + ref + ")");
 
             //Planed
             getCell(sheet.getRow(currentRow[0]++), currentColumn.get()).setCellValue(discipline.getFullGroup().getTotalSum());
             //Not done
-            ref = (char) ('A' + currentColumn.get()) + "22 - " + (char) ('A' + currentColumn.get()) + "21";
+            ref = this.buildCellRef(currentColumn.get()) + "22 - " + this.buildCellRef(currentColumn.get()) + "21";
             log.debug("Not done {} ", ref);
             HSSFCell notDoneCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             notDoneCell.setCellType(CellType.FORMULA);
             notDoneCell.setCellFormula(ref);
 
             //Over the plan
-            ref = (char) ('A' + currentColumn.get()) + "21 - " + (char) ('A' + currentColumn.get()) + "22";
+            ref = this.buildCellRef(currentColumn.get()) + "21 - " + this.buildCellRef(currentColumn.get()) + "22";
             log.debug("Over the plan {} ", ref);
             HSSFCell overThePlanCell = getCell(sheet.getRow(currentRow[0]++), currentColumn.get());
             overThePlanCell.setCellType(CellType.FORMULA);
@@ -257,5 +256,15 @@ public class YearReporterServiceImpl implements YearReporterService {
             cell = row.getCell(cellNum);
         }
         return cell;
+    }
+
+    private String buildCellRef(int currentColumn) {
+        int countOfLaters = currentColumn / 26;
+        StringBuilder cellRef = new StringBuilder();
+        for (int i = 1; i <= countOfLaters; i++) {
+            cellRef.append("A");
+        }
+        cellRef.append((char) ('A' + Math.abs(countOfLaters * 26 - currentColumn)));
+        return cellRef.toString();
     }
 }
