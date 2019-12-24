@@ -140,7 +140,7 @@ public class MonthReporterServiceImpl implements MonthReporterService {
 
     }
 
-    @SneakyThrows({IOException.class, InvalidFormatException.class})
+    @SneakyThrows({IOException.class })
     public void clearAllZeroCell(String workbookPathname, String sheetName, int startRow, int startColumn) {
         try (InputStream workbookStream = new FileInputStream(new File(workbookPathname))) {
 
